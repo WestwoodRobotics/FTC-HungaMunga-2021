@@ -85,8 +85,8 @@ public class TestbotTeleop extends OpMode
         // Reverse the motor that runs backwards when connected directly to the battery
         rightBackDrive.setDirection(DcMotorEx.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
-        leftFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        leftFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -98,10 +98,10 @@ public class TestbotTeleop extends OpMode
         rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         //setting PID coefficients
-        leftFrontDrive.setVelocityPIDFCoefficients(30, 0, 0, 0);
-        rightFrontDrive.setVelocityPIDFCoefficients(30, 0, 0, 0);
-        leftBackDrive.setVelocityPIDFCoefficients(30, 0, 0, 0);
-        rightBackDrive.setVelocityPIDFCoefficients(30, 0, 0, 0);
+        leftFrontDrive.setVelocityPIDFCoefficients(10, 0, 0, 0);
+        rightFrontDrive.setVelocityPIDFCoefficients(10, 0, 0, 0);
+        leftBackDrive.setVelocityPIDFCoefficients(10, 0, 0, 0);
+        rightBackDrive.setVelocityPIDFCoefficients(10, 0, 0, 0);
 
     }
 
@@ -139,10 +139,10 @@ public class TestbotTeleop extends OpMode
         double strafe = gamepad1.left_stick_x;
         double drive = gamepad1.left_stick_y;
         double turn  =  gamepad1.right_stick_x;
-        leftFrontPower   = drive - strafe - turn;
+        leftFrontPower   = drive + strafe - turn;
         rightFrontPower  = drive - strafe + turn;
-        leftBackPower    = drive + strafe - turn;
-        rightBackPower   = drive + strafe + turn;
+        leftBackPower    = drive + strafe + turn;
+        rightBackPower   = drive - strafe - turn;
 
         double maxValue = Math.max(Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),Math.max(Math.abs(leftBackPower), Math.abs(rightBackPower)));
 
@@ -158,14 +158,14 @@ public class TestbotTeleop extends OpMode
         // rightPower = -gamepad1.right_stick_y ;
 
         // Send calculated velocity to wheels
-        leftFrontDrive.setVelocity(leftFrontPower * 3000);
-        rightFrontDrive.setVelocity(rightFrontPower * 3000);
-        leftBackDrive.setVelocity(leftBackPower * 3000);
-        rightBackDrive.setVelocity(rightBackPower * 3000);
+        leftFrontDrive.setVelocity(leftFrontPower*3800);
+        rightFrontDrive.setVelocity(rightFrontPower*3800);
+        leftBackDrive.setVelocity(leftBackPower*3500);
+        rightBackDrive.setVelocity(rightBackPower*3500);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "left front (%.2f), right front (%.2f), left back (%.2f), right back (%.2f)", leftFrontDrive.getPower(), rightFrontDrive.getPower(), leftBackDrive.getPower(), rightBackDrive.getPower());
+        telemetry.addData("Motors", "left front (%.2f), right front (%.2f), left back (%.2f), right back (%.2f)", leftFrontDrive.getVelocity(), rightFrontDrive.getVelocity(), leftBackDrive.getVelocity(), rightBackDrive.getVelocity());
     }
 
     /*
