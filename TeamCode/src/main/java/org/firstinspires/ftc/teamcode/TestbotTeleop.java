@@ -98,10 +98,10 @@ public class TestbotTeleop extends OpMode
         rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         //setting PID coefficients
-        leftFrontDrive.setVelocityPIDFCoefficients(10, 0, 0, 0);
-        rightFrontDrive.setVelocityPIDFCoefficients(10, 0, 0, 0);
-        leftBackDrive.setVelocityPIDFCoefficients(10, 0, 0, 0);
-        rightBackDrive.setVelocityPIDFCoefficients(10, 0, 0, 0);
+        leftFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        rightFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
 
     }
 
@@ -159,9 +159,10 @@ public class TestbotTeleop extends OpMode
 
         // Send calculated velocity to wheels
         leftFrontDrive.setVelocity(leftFrontPower*3800);
+        rightBackDrive.setVelocity(rightBackPower*3800);
+        leftBackDrive.setVelocity(leftBackPower*3800);
         rightFrontDrive.setVelocity(rightFrontPower*3800);
-        leftBackDrive.setVelocity(leftBackPower*3500);
-        rightBackDrive.setVelocity(rightBackPower*3500);
+
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
