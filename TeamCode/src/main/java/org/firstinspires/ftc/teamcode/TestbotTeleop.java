@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
 
 
@@ -63,6 +64,8 @@ public class TestbotTeleop extends OpMode
     private DcMotorEx rightFrontDrive = null;
     private DcMotorEx leftBackDrive = null;
     private DcMotorEx rightBackDrive = null;
+    private DcMotorEx intakeDrive = null;
+    private Servo carouselServo = null;
 
 
 
@@ -80,6 +83,10 @@ public class TestbotTeleop extends OpMode
         rightFrontDrive = hardwareMap.get(DcMotorEx.class, "right_front");
         leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back");
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back");
+        intakeDrive = hardwareMap.get(DcMotorEx.class, "intake");
+        carouselServo = hardwareMap.get(Servo.class, "carousel");
+
+
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -87,6 +94,8 @@ public class TestbotTeleop extends OpMode
         leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
         leftFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
+        intakeDrive.setDirection(DcMotorEx.Direction.REVERSE);
+        carouselServo.setDirection(Servo.Direction.FORWARD);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -96,12 +105,14 @@ public class TestbotTeleop extends OpMode
         rightFrontDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //setting PID coefficients
         leftFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         rightFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        intakeDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
 
     }
 
@@ -130,6 +141,9 @@ public class TestbotTeleop extends OpMode
         double rightFrontPower;
         double leftBackPower;
         double rightBackPower;
+        double intakePower;
+        double carouselPower;
+
 
         // Choose to drive using either Tank Mode, or POV Mode
         // Comment out the method that's not used.  The default below is POV.
@@ -139,10 +153,17 @@ public class TestbotTeleop extends OpMode
         double strafe = gamepad1.left_stick_x;
         double drive = gamepad1.left_stick_y;
         double turn  =  gamepad1.right_stick_x;
+        boolean intakeIn = gamepad1.left_bumper;
+        boolean intakeOut = gamepad1.right_bumper;
+        boolean carousel = gamepad1.a;
+
+
         leftFrontPower   = drive + strafe - turn;
         rightFrontPower  = drive - strafe + turn;
         leftBackPower    = drive + strafe + turn;
         rightBackPower   = drive - strafe - turn;
+        intakePower = 0;
+        carouselPower = 0;
 
         double maxValue = Math.max(Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),Math.max(Math.abs(leftBackPower), Math.abs(rightBackPower)));
 
@@ -152,21 +173,45 @@ public class TestbotTeleop extends OpMode
             leftBackPower /= maxValue;
             rightBackPower /= maxValue;
         }
+
+        if (intakeIn) {
+            intakePower = 1;
+        }
+        else if (intakeOut){
+            intakePower = -1;
+        }
+
+        if (carousel) {
+            carouselPower = 1;
+        }
+
         // Tank Mode uses one stick to control each wheel.
         // - This requires no math, but it is hard to drive forward slowly and keep straight.
         // leftPower  = -gamepad1.left_stick_y ;
         // rightPower = -gamepad1.right_stick_y ;
 
         // Send calculated velocity to wheels
-        leftFrontDrive.setVelocity(leftFrontPower*3800);
-        rightBackDrive.setVelocity(rightBackPower*3800);
-        leftBackDrive.setVelocity(leftBackPower*3800);
-        rightFrontDrive.setVelocity(rightFrontPower*3800);
+        leftFrontDrive.setVelocity(leftFrontPower * 3800);
+        rightBackDrive.setVelocity(rightBackPower * 3800);
+        leftBackDrive.setVelocity(leftBackPower * 3800);
+        rightFrontDrive.setVelocity(rightFrontPower * 3800);
+        intakeDrive.setVelocity(intakePower * 1000);
+
+        while (carousel) {
+            carouselServo.setPosition(1);
+        }
 
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "left front (%.2f), right front (%.2f), left back (%.2f), right back (%.2f)", leftFrontDrive.getVelocity(), rightFrontDrive.getVelocity(), leftBackDrive.getVelocity(), rightBackDrive.getVelocity());
+        telemetry.addData("Motors", "left front (%.2f)", leftFrontDrive.getVelocity());
+        telemetry.addData("Motors", "right front (%.2f)", rightFrontDrive.getVelocity());
+        telemetry.addData("Motors", "left back (%.2f)", leftBackDrive.getVelocity());
+        telemetry.addData("Motors", "right back (%.2f)", rightBackDrive.getVelocity());
+        telemetry.addData("Motors", "intake speed", intakeDrive.getVelocity());
+        telemetry.addData("Boolean", "intake in(%.2f)", intakeIn);
+        telemetry.addData("Boolean", "intake out(%.2f)", intakeOut);
+        telemetry.addData("Boolean", "carousel(%.2f)", carousel);
     }
 
     /*
