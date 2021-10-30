@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -112,7 +111,7 @@ public class TestbotTeleop extends OpMode
         rightFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
-        //intakeDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        //intakeDrive.setVelocityPIDFCoefficients(5, 0, 0, 0);
 
     }
 
@@ -170,12 +169,15 @@ public class TestbotTeleop extends OpMode
         }
 
         if (intakeIn > 0) {
-            // intakeDrive.setVelocity(intakeIn * 1000);
+            //intakeDrive.setVelocity(intakeIn * 1000);
             intakeDrive.setPower(intakeIn);
         }
         else if (intakeOut > 0){
-            // intakeDrive.setVelocity(intakeOut * -1000);
+            //intakeDrive.setVelocity(intakeOut * -1000);
             intakeDrive.setPower(-intakeOut);
+        }
+        else {
+            intakeDrive.setVelocity(0);
         }
 
 
