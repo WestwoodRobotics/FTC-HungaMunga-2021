@@ -112,7 +112,7 @@ public class TestbotTeleop extends OpMode
         rightFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
-        intakeDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        //intakeDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
 
     }
 
@@ -141,8 +141,6 @@ public class TestbotTeleop extends OpMode
         double rightFrontPower;
         double leftBackPower;
         double rightBackPower;
-        double intakePower;
-        double carouselPower;
 
 
         // Choose to drive using either Tank Mode, or POV Mode
@@ -153,17 +151,14 @@ public class TestbotTeleop extends OpMode
         double strafe = gamepad1.left_stick_x;
         double drive = gamepad1.left_stick_y;
         double turn  =  gamepad1.right_stick_x;
-        boolean intakeIn = gamepad1.left_bumper;
-        boolean intakeOut = gamepad1.right_bumper;
+        double intakeIn = gamepad1.left_trigger;
+        double intakeOut = gamepad1.right_trigger;
         boolean carousel = gamepad1.a;
-
 
         leftFrontPower   = drive + strafe - turn;
         rightFrontPower  = drive - strafe + turn;
         leftBackPower    = drive + strafe + turn;
         rightBackPower   = drive - strafe - turn;
-        intakePower = 0;
-        carouselPower = 0;
 
         double maxValue = Math.max(Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),Math.max(Math.abs(leftBackPower), Math.abs(rightBackPower)));
 
@@ -174,16 +169,16 @@ public class TestbotTeleop extends OpMode
             rightBackPower /= maxValue;
         }
 
-        if (intakeIn) {
-            intakePower = 1;
+        if (intakeIn > 0) {
+            // intakeDrive.setVelocity(intakeIn * 1000);
+            intakeDrive.setPower(intakeIn);
         }
-        else if (intakeOut){
-            intakePower = -1;
+        else if (intakeOut > 0){
+            // intakeDrive.setVelocity(intakeOut * -1000);
+            intakeDrive.setPower(-intakeOut);
         }
 
-        if (carousel) {
-            carouselPower = 1;
-        }
+
 
         // Tank Mode uses one stick to control each wheel.
         // - This requires no math, but it is hard to drive forward slowly and keep straight.
@@ -195,10 +190,12 @@ public class TestbotTeleop extends OpMode
         rightBackDrive.setVelocity(rightBackPower * 3800);
         leftBackDrive.setVelocity(leftBackPower * 3800);
         rightFrontDrive.setVelocity(rightFrontPower * 3800);
-        intakeDrive.setVelocity(intakePower * 1000);
 
-        while (carousel) {
+        if (carousel == true) {
             carouselServo.setPosition(1);
+        }
+        else if (carousel == false) {
+            carouselServo.setPosition(.5);
         }
 
 
@@ -208,10 +205,10 @@ public class TestbotTeleop extends OpMode
         telemetry.addData("Motors", "right front (%.2f)", rightFrontDrive.getVelocity());
         telemetry.addData("Motors", "left back (%.2f)", leftBackDrive.getVelocity());
         telemetry.addData("Motors", "right back (%.2f)", rightBackDrive.getVelocity());
-        telemetry.addData("Motors", "intake speed", intakeDrive.getVelocity());
-        telemetry.addData("Boolean", "intake in(%.2f)", intakeIn);
-        telemetry.addData("Boolean", "intake out(%.2f)", intakeOut);
-        telemetry.addData("Boolean", "carousel(%.2f)", carousel);
+        telemetry.addData("Motors", "intake speed (%.2f)", intakeDrive.getVelocity());
+        telemetry.addData("Boolean", "intake in(%b)", intakeIn);
+        telemetry.addData("Boolean", "intake out(%b)", intakeOut);
+        telemetry.addData("Boolean", "carousel(%b)", carousel);
     }
 
     /*
