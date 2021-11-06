@@ -27,7 +27,7 @@ public class AutonMethods {
         this.rightFrontDrive = rightFrontDrive;
         this.leftBackDrive = leftBackDrive;
         this.rightBackDrive = rightBackDrive;
-
+        }
         //go forward for time
         public void goForward (double seconds, double velocity) {
             runtime.reset();
@@ -44,7 +44,7 @@ public class AutonMethods {
             rightBackDrive.setVelocity(0);
             leftBackDrive.setVelocity(0);
             rightFrontDrive.setVelocity(0);
-        }
+         }
 
-    }
+
 }
