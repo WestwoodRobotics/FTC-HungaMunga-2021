@@ -132,7 +132,9 @@ public class AutonMethods {
         intakeDrive.setVelocity(0);
     }
     //go forward for time
-    public void turnCarousel (double seconds) {
+
+    public void turnCarousel (double seconds, double velocity) {
+
         runtime.reset();
         carouselServo.setPosition(1);
 
