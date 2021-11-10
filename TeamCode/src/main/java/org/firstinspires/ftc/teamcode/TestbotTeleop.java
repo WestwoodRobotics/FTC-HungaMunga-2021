@@ -72,7 +72,7 @@ public class TestbotTeleop extends OpMode
 //    DcMotor tester = null;
 //    DcMotorEx.RunMode.RUN_TO_POSITION;
 
-
+//carousel and outake reverse
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -122,7 +122,7 @@ public class TestbotTeleop extends OpMode
         rightFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
-        //intakeDrive.setVelocityPIDFCoefficients(5, 0, 0, 0);
+        intakeDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
 
     }
 
@@ -163,8 +163,10 @@ public class TestbotTeleop extends OpMode
         double turn  =  gamepad1.right_stick_x;
         double intakeIn = gamepad1.left_trigger;
         double intakeOut = gamepad1.right_trigger;
-        boolean carousel = gamepad1.a;
-        boolean outtake = gamepad1.b;
+        boolean carouselCounterClock = gamepad1.a;
+        boolean carouselClockWise = gamepad1.y;
+        boolean outtakeOut = gamepad1.right_bumper;
+        boolean outtakeIn = gamepad1.left_bumper;
 
         leftFrontPower   = drive - strafe - turn;
         rightFrontPower  = drive + strafe + turn;
@@ -181,16 +183,17 @@ public class TestbotTeleop extends OpMode
         }
 
         if (intakeIn > 0) {
-            //intakeDrive.setVelocity(intakeIn * 1000);
-            intakeDrive.setPower(intakeIn);
+            //intakeDrive.setVelocity(intakeIn * 3500);
+            intakeDrive.setPower(1);
         }
         else if (intakeOut > 0){
-            //intakeDrive.setVelocity(intakeOut * -1000);
-            intakeDrive.setPower(-intakeOut);
+            //intakeDrive.setVelocity(intakeOut * -3500);
+            intakeDrive.setPower(-1);
         }
         else {
             intakeDrive.setPower(0);
         }
+
 
 
 
@@ -205,18 +208,40 @@ public class TestbotTeleop extends OpMode
         leftBackDrive.setVelocity(leftBackPower * 3500);
         rightFrontDrive.setVelocity(rightFrontPower * 3500);
 
-        if (carousel == true) {
+        // intake objects in and out when the corresponding trigger is pressed
+        if (intakeIn > 0) {
+            intakeDrive.setVelocity(intakeIn * -3000);
+            //intakeDrive.setPower(intakeIn);
+        }
+        else if (intakeOut > 0){
+            intakeDrive.setVelocity(intakeOut * 3000);
+            //intakeDrive.setPower(-intakeOut);
+        }
+        else {
+            intakeDrive.setPower(0);
+        }
+
+        //carousel clockwise and counter clockwise spin when the corresponding button is pressed
+        if (carouselCounterClock == true) {
             carouselServo.setPosition(1);
         }
-        else if (carousel == false) {
+        else if (carouselClockWise == true) {
+            carouselServo.setPosition(0);
+        }
+        else {
             carouselServo.setPosition(.5);
         }
 
-        if (outtake == true) {
+        //outtake in and out when the corresponding button is pressed.
+        if (outtakeIn == true) {
+            outtakeServo1.setPosition(0);
+            outtakeServo2.setPosition(0);
+        }
+        else if (outtakeOut == true) {
             outtakeServo1.setPosition(1);
             outtakeServo2.setPosition(1);
         }
-        else if (outtake == false) {
+        else {
             outtakeServo1.setPosition(.5);
             outtakeServo2.setPosition(.5);
         }
@@ -229,10 +254,12 @@ public class TestbotTeleop extends OpMode
         telemetry.addData("Motors", "left back (%.2f)", leftBackDrive.getVelocity());
         telemetry.addData("Motors", "right back (%.2f)", rightBackDrive.getVelocity());
         telemetry.addData("Motors", "intake speed (%.2f)", intakeDrive.getVelocity());
-        telemetry.addData("Boolean", "intake in(%b)", intakeIn);
-        telemetry.addData("Boolean", "intake out(%b)", intakeOut);
-        telemetry.addData("Boolean", "carousel(%b)", carousel);
-        telemetry.addData("Boolean", "outtake(%b)", outtake);
+        telemetry.addData("Boolean", "intake in(%.2f)", intakeIn);
+        telemetry.addData("Boolean", "intake out(%.2f)", intakeOut);
+        telemetry.addData("Boolean", "carousel(%b)", carouselClockWise);
+        telemetry.addData("boolean", "carousel(%b", carouselCounterClock);
+        telemetry.addData("boolean", "outtake(%b", outtakeIn);
+        telemetry.addData("Boolean", "outtake(%b)", outtakeOut);
     }
 
     /*
@@ -243,4 +270,3 @@ public class TestbotTeleop extends OpMode
     }
 
 }
-

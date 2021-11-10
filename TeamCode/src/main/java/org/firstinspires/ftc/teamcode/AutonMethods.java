@@ -74,6 +74,42 @@ public class AutonMethods {
         rightFrontDrive.setVelocity(0);
     }
 
+    //strafe right for time
+    public void rightStrafe(double seconds, double velocity) {
+        runtime.reset();
+        leftFrontDrive.setVelocity(-velocity);
+        rightBackDrive.setVelocity(-velocity);
+        leftBackDrive.setVelocity(velocity);
+        rightFrontDrive.setVelocity(velocity);
+
+        while (runtime.seconds() < seconds ){
+
+        }
+
+        leftFrontDrive.setVelocity(0);
+        rightBackDrive.setVelocity(0);
+        leftBackDrive.setVelocity(0);
+        rightFrontDrive.setVelocity(0);
+    }
+
+    //strafe left for time
+    public void leftStrafe(double seconds, double velocity) {
+        runtime.reset();
+        leftFrontDrive.setVelocity(velocity);
+        rightBackDrive.setVelocity(velocity);
+        leftBackDrive.setVelocity(-velocity);
+        rightFrontDrive.setVelocity(-velocity);
+
+        while (runtime.seconds() < seconds ){
+
+        }
+
+        leftFrontDrive.setVelocity(0);
+        rightBackDrive.setVelocity(0);
+        leftBackDrive.setVelocity(0);
+        rightFrontDrive.setVelocity(0);
+    }
+
     //turn right for time
     public void rightTurn(double seconds, double velocity) {
         runtime.reset();
@@ -132,9 +168,7 @@ public class AutonMethods {
         intakeDrive.setVelocity(0);
     }
     //go forward for time
-
-    public void turnCarousel (double seconds, double velocity) {
-
+    public void turnCarousel (double seconds) {
         runtime.reset();
         carouselServo.setPosition(1);
 
