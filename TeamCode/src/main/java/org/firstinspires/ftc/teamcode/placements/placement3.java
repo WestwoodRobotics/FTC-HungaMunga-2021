@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.AutonMethods;
 
-@Autonomous(name="HungaMunga: AutonTimeBased1", group="Linear Opmode")
-public class placement1 extends LinearOpMode{
+@Autonomous(name="HungaMunga: AutonTimeBased2", group="Linear Opmode")
+public class placement3 extends LinearOpMode{
 
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotorEx leftFrontDrive = null;
@@ -47,11 +47,11 @@ public class placement1 extends LinearOpMode{
         AutonMethods methods = new AutonMethods(this, telemetry, leftFrontDrive,  rightFrontDrive, leftBackDrive, rightBackDrive, intakeDrive, carouselServo);
 
         while (runtime.seconds() < 30) {
-            methods.rightTurn(1, 1200 );
-            methods.goForward(1, 1200);
+            methods.leftTurn(1, 1200 );
+            methods.goForward(2, 1200);
             methods.turnCarousel(5);
             methods.rightTurn(2, 1200);
-            methods.leftStrafe(2, 1200);
+            methods.rightStrafe(2, 1200);
             methods.goForward(8, 1500);
         }
 
