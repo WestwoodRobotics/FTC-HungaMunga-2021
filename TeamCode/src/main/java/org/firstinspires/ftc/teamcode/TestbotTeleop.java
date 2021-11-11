@@ -65,6 +65,7 @@ public class TestbotTeleop extends OpMode
     private DcMotorEx leftBackDrive = null;
     private DcMotorEx rightBackDrive = null;
     private DcMotorEx intakeDrive = null;
+    private DcMotorEx tunnelDrive = null;
     private Servo carouselServo = null;
     private Servo outtakeServo1 = null;
     private Servo outtakeServo2 = null;
@@ -89,6 +90,7 @@ public class TestbotTeleop extends OpMode
         leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back");
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back");
         intakeDrive = hardwareMap.get(DcMotorEx.class, "intake");
+        tunnelDrive = hardwareMap.get(DcMotorEx.class, "tunnel");
         carouselServo = hardwareMap.get(Servo.class, "carousel");
         outtakeServo1 = hardwareMap.get(Servo.class, "outtake1");
         outtakeServo2 = hardwareMap.get(Servo.class, "outtake2");
@@ -102,6 +104,7 @@ public class TestbotTeleop extends OpMode
         rightFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
         leftFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
         intakeDrive.setDirection(DcMotorEx.Direction.REVERSE);
+        tunnelDrive.setDirection(DcMotorEx.Direction.FORWARD);
         carouselServo.setDirection(Servo.Direction.FORWARD);
         outtakeServo1.setDirection(Servo.Direction.FORWARD);
         outtakeServo2.setDirection(Servo.Direction.REVERSE);
@@ -116,6 +119,7 @@ public class TestbotTeleop extends OpMode
         leftBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        tunnelDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //setting PID coefficients
         leftFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
@@ -123,6 +127,7 @@ public class TestbotTeleop extends OpMode
         leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         intakeDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        tunnelDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
 
     }
 
@@ -182,17 +187,6 @@ public class TestbotTeleop extends OpMode
             rightBackPower /= maxValue;
         }
 
-        if (intakeIn > 0) {
-            //intakeDrive.setVelocity(intakeIn * 3500);
-            intakeDrive.setPower(1);
-        }
-        else if (intakeOut > 0){
-            //intakeDrive.setVelocity(intakeOut * -3500);
-            intakeDrive.setPower(-1);
-        }
-        else {
-            intakeDrive.setPower(0);
-        }
 
 
 
@@ -211,6 +205,7 @@ public class TestbotTeleop extends OpMode
         // intake objects in and out when the corresponding trigger is pressed
         if (intakeIn > 0) {
             intakeDrive.setVelocity(intakeIn * -3000);
+            tunnelDrive.setVelocity(intakeIn * -3000);
             //intakeDrive.setPower(intakeIn);
         }
         else if (intakeOut > 0){
