@@ -8,9 +8,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.AutonMethods;
 
-@Autonomous(name="HungaMunga: AutonTimeBased2", group="Linear Opmode")
+@Autonomous(name="HungaMunga: AutonTimeBased4", group="Linear Opmode")
 public class placement4 extends LinearOpMode{
-
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotorEx leftFrontDrive = null;
     private DcMotorEx rightFrontDrive = null;
@@ -20,6 +19,8 @@ public class placement4 extends LinearOpMode{
     private Servo carouselServo = null;
     private Servo outtakeServo1 = null;
     private Servo outtakeServo2 = null;
+    private DcMotorEx tunnelDrive =  null;
+    private DcMotorEx elevatorDrive = null;
 
     @Override
     public void runOpMode() {
@@ -32,6 +33,7 @@ public class placement4 extends LinearOpMode{
         carouselServo = hardwareMap.get(Servo.class, "carousel");
         outtakeServo1 = hardwareMap.get(Servo.class, "outtake1");
         outtakeServo2 = hardwareMap.get(Servo.class, "outtake2");
+        elevatorDrive = hardwareMap.get(DcMotorEx.class, "elevator");
 
         rightBackDrive.setDirection(DcMotorEx.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
@@ -41,10 +43,11 @@ public class placement4 extends LinearOpMode{
         carouselServo.setDirection(Servo.Direction.FORWARD);
         outtakeServo1.setDirection(Servo.Direction.FORWARD);
         outtakeServo2.setDirection(Servo.Direction.REVERSE);
+        elevatorDrive.setDirection(DcMotorEx.Direction.FORWARD);
 
 
 
-        AutonMethods methods = new AutonMethods(this, telemetry, leftFrontDrive,  rightFrontDrive, leftBackDrive, rightBackDrive, intakeDrive, carouselServo);
+        AutonMethods methods = new AutonMethods(this, telemetry, leftFrontDrive,  rightFrontDrive, leftBackDrive, rightBackDrive, intakeDrive, carouselServo, tunnelDrive, elevatorDrive);
 
         while (runtime.seconds() < 30) {
             methods.leftTurn(1, 1200 );

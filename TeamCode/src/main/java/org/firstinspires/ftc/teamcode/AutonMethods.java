@@ -18,6 +18,8 @@ public class AutonMethods {
     private DcMotorEx rightBackDrive = null;
     private DcMotorEx intakeDrive = null;
     private Servo carouselServo = null;
+    private DcMotorEx tunnelDrive =  null;
+    private DcMotorEx elevatorDrive = null;
 
     public AutonMethods (LinearOpMode opmode,
                          Telemetry telemetry,
@@ -26,7 +28,9 @@ public class AutonMethods {
                          DcMotorEx leftBackDrive,
                          DcMotorEx rightBackDrive,
                          DcMotorEx intakeDrive,
-                         Servo carouselServo) {
+                         Servo carouselServo,
+                         DcMotorEx tunnelDrive,
+                         DcMotorEx elevatorDrive) {
 
         this.opmode = opmode;
         this.telemetry = telemetry;
@@ -36,6 +40,8 @@ public class AutonMethods {
         this.rightBackDrive = rightBackDrive;
         this.intakeDrive = intakeDrive;
         this.carouselServo = carouselServo;
+        this.tunnelDrive = tunnelDrive;
+        this.elevatorDrive = elevatorDrive;
     }
 
     //go forward for time
@@ -149,10 +155,11 @@ public class AutonMethods {
     public void intakeIn(double seconds, double velocity) {
         runtime.reset();
         intakeDrive.setVelocity(-velocity);
-
+        tunnelDrive.setVelocity(-velocity);
         while (runtime.seconds() < seconds ){
 
         }
+
 
         intakeDrive.setVelocity(0);
     }
@@ -180,4 +187,26 @@ public class AutonMethods {
 
 
     }
+    public void elevatorUp (double seconds) {
+        runtime.reset();
+        elevatorDrive.setVelocity(1);
+
+        while (runtime.seconds() < seconds ){
+
+        }
+
+        elevatorDrive.setVelocity(0);
+
+    }
+    public void elevatorDown (double seconds) {
+        runtime.reset();
+        elevatorDrive.setVelocity(-1);
+        while (runtime.seconds() < seconds ){
+
+        }
+
+        elevatorDrive.setVelocity(0);
+
+    }
+
 }

@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.AutonMethods;
 
-@Autonomous(name="HungaMunga: AutonTimeBased1", group="Linear Opmode")
+@Autonomous(name="Anaya: AutonTimeBased1", group="Linear Opmode")
 public class placement1 extends LinearOpMode{
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -20,6 +20,8 @@ public class placement1 extends LinearOpMode{
     private Servo carouselServo = null;
     private Servo outtakeServo1 = null;
     private Servo outtakeServo2 = null;
+    private DcMotorEx tunnelDrive =  null;
+    private DcMotorEx elevatorDrive = null;
 
     @Override
     public void runOpMode() {
@@ -32,6 +34,7 @@ public class placement1 extends LinearOpMode{
         carouselServo = hardwareMap.get(Servo.class, "carousel");
         outtakeServo1 = hardwareMap.get(Servo.class, "outtake1");
         outtakeServo2 = hardwareMap.get(Servo.class, "outtake2");
+        elevatorDrive = hardwareMap.get(DcMotorEx.class, "elevator");
 
         rightBackDrive.setDirection(DcMotorEx.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
@@ -41,18 +44,19 @@ public class placement1 extends LinearOpMode{
         carouselServo.setDirection(Servo.Direction.FORWARD);
         outtakeServo1.setDirection(Servo.Direction.FORWARD);
         outtakeServo2.setDirection(Servo.Direction.REVERSE);
+        elevatorDrive.setDirection(DcMotorEx.Direction.FORWARD);
 
 
 
-        AutonMethods methods = new AutonMethods(this, telemetry, leftFrontDrive,  rightFrontDrive, leftBackDrive, rightBackDrive, intakeDrive, carouselServo);
+        AutonMethods methods = new AutonMethods(this, telemetry, leftFrontDrive,  rightFrontDrive, leftBackDrive, rightBackDrive, intakeDrive, carouselServo, tunnelDrive, elevatorDrive);
 
         while (runtime.seconds() < 30) {
-            methods.rightTurn(1, 1200 );
-            methods.goForward(1, 1200);
+            methods.rightTurn(.5, 3500 );
+            methods.goForward(.2, 3500);
             methods.turnCarousel(5);
-            methods.rightTurn(2, 1200);
-            methods.leftStrafe(2, 1200);
-            methods.goForward(8, 1500);
+            methods.rightTurn(1, 3500);
+            methods.leftStrafe(1, 3500);
+            methods.goForward(5, 1100);
         }
 
 
