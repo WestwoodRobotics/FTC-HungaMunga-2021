@@ -94,7 +94,7 @@ public class TestbotTeleop extends OpMode
         carouselServo = hardwareMap.get(Servo.class, "carousel");
         outtakeServo1 = hardwareMap.get(Servo.class, "outtake1");
         outtakeServo2 = hardwareMap.get(Servo.class, "outtake2");
-        tunnelDrive = hardwareMap.get(DcMotorEx.class, "tunnel");
+        //tunnelDrive = hardwareMap.get(DcMotorEx.class, "tunnel");
         elevatorDrive = hardwareMap.get(DcMotorEx.class, "elevator");
 
 
@@ -109,8 +109,9 @@ public class TestbotTeleop extends OpMode
         carouselServo.setDirection(Servo.Direction.FORWARD);
         outtakeServo1.setDirection(Servo.Direction.FORWARD);
         outtakeServo2.setDirection(Servo.Direction.REVERSE);
-        tunnelDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        //tunnelDrive.setDirection(DcMotorEx.Direction.FORWARD);
         elevatorDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        elevatorDrive.setDirection(DcMotorEx.Direction.REVERSE);
 
 
         // Tell the driver that initialization is complete.
@@ -122,7 +123,11 @@ public class TestbotTeleop extends OpMode
         leftBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        tunnelDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        elevatorDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //tunnelDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
+
 
 
 
@@ -132,7 +137,7 @@ public class TestbotTeleop extends OpMode
         leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         intakeDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
-        tunnelDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        //tunnelDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
     }
 
     /*
@@ -172,6 +177,8 @@ public class TestbotTeleop extends OpMode
         double turn  =  gamepad1.right_stick_x;
         double intakeIn = gamepad1.left_trigger;
         double intakeOut = gamepad1.right_trigger;
+//        double intakeIn = gamepad1.right_trigger;
+//        double intakeOut = gamepad1.left_trigger;
         boolean carouselCounterClock = gamepad1.a;
         boolean carouselClockWise = gamepad1.y;
         boolean outtakeIn = gamepad1.left_bumper;
@@ -222,7 +229,7 @@ public class TestbotTeleop extends OpMode
         // intake objects in and out when the corresponding trigger is pressed
         if (intakeIn > 0) {
             intakeDrive.setVelocity(intakeIn * -4000);
-            tunnelDrive.setVelocity(intakeIn * -4000);
+            //tunnelDrive.setVelocity(intakeIn * -4000);
             //intakeDrive.setPower(intakeIn);
         }
         else if (intakeOut > 0){
@@ -264,6 +271,9 @@ public class TestbotTeleop extends OpMode
         }
         else if (elevatorDown == true) {
             elevatorDrive.setVelocity(-1200);
+        }
+        else{
+            elevatorDrive.setVelocity(0);
         }
 
 
