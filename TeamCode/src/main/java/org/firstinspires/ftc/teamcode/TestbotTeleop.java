@@ -221,12 +221,12 @@ public class TestbotTeleop extends OpMode
 
         // intake objects in and out when the corresponding trigger is pressed
         if (intakeIn > 0) {
-            intakeDrive.setVelocity(intakeIn * -3000);
-            tunnelDrive.setVelocity(intakeIn * -3000);
+            intakeDrive.setVelocity(intakeIn * -4000);
+            tunnelDrive.setVelocity(intakeIn * -4000);
             //intakeDrive.setPower(intakeIn);
         }
         else if (intakeOut > 0){
-            intakeDrive.setVelocity(intakeOut * 3000);
+            intakeDrive.setVelocity(intakeOut * 4000);
             //intakeDrive.setPower(-intakeOut);
         }
         else {
