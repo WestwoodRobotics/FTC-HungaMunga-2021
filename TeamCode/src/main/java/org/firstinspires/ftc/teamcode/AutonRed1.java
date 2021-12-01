@@ -57,8 +57,8 @@ import java.util.HashMap;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Basic: AutomCallerRedSideCaruselPlay", group="Linear Opmode")
-public class Auton3 extends LinearOpMode {
+@Autonomous(name="Basic: AutonRed1", group="Linear Opmode")
+public class AutonRed1 extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -709,6 +709,8 @@ public class Auton3 extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
+
+
 
 
         double matSize = 2*(24*25.4);

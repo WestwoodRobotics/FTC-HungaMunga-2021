@@ -28,7 +28,6 @@ package org.firstinspires.ftc.teamcode;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -58,8 +57,8 @@ import java.util.HashMap;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Basic: AutomCallerBlueStationPlay", group="Linear Opmode")
-public class Auton1 extends LinearOpMode {
+@Autonomous(name="Basic: AutonTurningtesting", group="Linear Opmode")
+public class AutonTurningTesting extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -68,7 +67,7 @@ public class Auton1 extends LinearOpMode {
     private DcMotorEx leftBackDrive = null;
     private DcMotorEx rightBackDrive = null;
     private double globalMovementTimer = 0;
-    final int robotVelocity = 560;
+    final int robotVelocity = 2800;
     private Servo carouselServo = null;
 
     //    private AutomMotorMethods LFDMethods = new AutomMotorMethods(3500, 0.0,
@@ -712,11 +711,15 @@ public class Auton1 extends LinearOpMode {
         runtime.reset();
 
 
+
+
         double matSize = 2*(24*25.4);
 
         // run until the end of the match (driver presses STOP)
+        //red side
 
-        moveForwardOrBackwardsDistance(matSize+1000, generalMotorMethods, "BACKWARDS");
+        rotateToAngle(90, generalMotorMethods);
+
 
         while (runtime.seconds() < 30) {
 
@@ -732,5 +735,4 @@ public class Auton1 extends LinearOpMode {
 
     }
 }
-
 

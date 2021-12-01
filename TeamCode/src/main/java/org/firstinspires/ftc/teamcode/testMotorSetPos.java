@@ -57,12 +57,12 @@ import java.util.HashMap;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Basic: testAutomSpeeds", group="Linear Opmode")
-public class testingMotorSpeeds extends LinearOpMode {
+@Autonomous(name="Basic: testMotorPos", group="Linear Opmode")
+public class testMotorSetPos extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotorEx testMotor = null;
+    private DcMotor testMotor = null;
     private double globalMovementTimer = 0;
     final int robotVelocity = 2800;
 
@@ -79,15 +79,15 @@ public class testingMotorSpeeds extends LinearOpMode {
 
     public void moveMotorsFor(double timeDuration, double velocity, String forwardOrBackwards) {
         if (forwardOrBackwards == "FORWARDS") {
-            testMotor.setVelocity(velocity);
+            testMotor.setPower(1);
         }
         else if (forwardOrBackwards == "BACKWARDS") {
-            testMotor.setVelocity(-velocity);
+            testMotor.setPower(-1);
         }
         globalMovementTimer += timeDuration;
 
         while (runtime.seconds() < globalMovementTimer) {
-            telemetry.addData("Motors", "left front (%.2f)", testMotor.getVelocity());
+            telemetry.addData("Motors", "left front (%.2f)", testMotor.getPower());
             telemetry.addData("globaTimer", "globalTime: " + globalMovementTimer);
             telemetry.addData("Time Duration", "currentStageDuration: " + velocity);
             telemetry.addData("Time", "time: " + runtime.seconds());
@@ -352,7 +352,7 @@ public class testingMotorSpeeds extends LinearOpMode {
 
         }
 
-        testMotor.setVelocity(0);
+        testMotor.setPower(0);
 
         // MotorMethods.updatePos();
     }
@@ -377,7 +377,14 @@ public class testingMotorSpeeds extends LinearOpMode {
     }
 
     public void stopMotorSpin() {
-        testMotor.setVelocity(0);
+        testMotor.setPower(0);
+    }
+
+    public void goToThatPos(int Position, double velocity, double reps) {
+        testMotor.setTargetPosition(Position);
+        testMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        testMotor.setPower(velocity);
+
     }
 
     @Override
@@ -396,7 +403,10 @@ public class testingMotorSpeeds extends LinearOpMode {
 
         testMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        testMotor.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        testMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+//        testMotor.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        testMotor.setTargetPosition(560);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -405,7 +415,9 @@ public class testingMotorSpeeds extends LinearOpMode {
         double matSize = 24*25.4;
 
         // run until the end of the match (driver presses STOP)
-        moveForwardDistance(matSize, generalMotorMethods);
+
+        goToThatPos(560, 2800, 15);
+
 
         // stopMotorSpin();
 

@@ -40,7 +40,7 @@ public class AutomMotorMethods {
 
     // returns circumference of mecanum wheels
     public double getCircumference() {
-        double circumference = Math.PI * Math.pow(48, 2);
+        double circumference = 2 * Math.PI * 48;
         return circumference;
     }
 
@@ -82,7 +82,7 @@ public class AutomMotorMethods {
 
     // returns the distance crossed for given tick amount
     public double distanceCrossed(int ticksCrossed) {
-        double circumference = Math.PI * Math.pow(48, 2);
+        double circumference = 2 * Math.PI * 48;
         double distancePerTick = circumference / 560;
         // distance is in mm = millimiters
         double distCrossed = ticksCrossed * distancePerTick;
@@ -106,6 +106,11 @@ public class AutomMotorMethods {
         distPer360angle = circumference/360;
         int coverDistance = (int) (distPer360angle * angle);
         return coverDistance;
+    }
+
+    public double distanceForVelocityAndTime(int velocity, double seconds) {
+        double distance = velocity*seconds;
+        return distance;
     }
 
     // updates angle of robot
@@ -156,9 +161,9 @@ public class AutomMotorMethods {
         wheelNumDirection.put("BACKWARDS", -1);
 
         Integer wheelDirectionNumValue = wheelNumDirection.get(wheelDirection);
-        if (wheelDirection == "FORWARDS") {
+        if (wheelDirection.equals("FORWARDS")) {
             return 1;
-        } else if (wheelDirection == "BACKWARDS") {
+        } else if (wheelDirection.equals("BACKWARDS")) {
             return -1;
         }
         else {
@@ -166,7 +171,33 @@ public class AutomMotorMethods {
         }
     }
 
+    public double findCircleDistanceAccordingToRL(String wantedDirection,
+                                                  double angleDistance, double currentRobotAngle) {
+        double distanceFirstPart = 0;
+        double distanceSecondPart = 0;
+        if (wantedDirection.equals("LEFT")) {
+            if (angleDistance < 0) {
+                distanceFirstPart = 360 - currentRobotAngle;
+                distanceSecondPart = Math.abs(angleDistance);
+                return distanceFirstPart + distanceSecondPart;
+            }
+            else {
+                return angleDistance;
+            }
+        }
+        else {
+            if (angleDistance > 360) {
+                distanceFirstPart = currentRobotAngle;
+                distanceSecondPart = Math.abs(angleDistance-360);
+                return distanceFirstPart + distanceSecondPart;
+            }
+            else {
+                return angleDistance;
+            }
+        }
+    }
 
+    // finding if to move left or right to reach wanted angle
     public int findOptimumMovementForRobotRotation(double wantedAngle, String wantedWheel) {
         HashMap<String, Integer> wheelDirections = new HashMap<String, Integer>();
 
@@ -179,11 +210,17 @@ public class AutomMotorMethods {
         int rightFrontSpinDirection = 0;
         int rightBackSpinDirection = 0;
         double currentRobotAngle = this.getCurrentRobotAngle();
-        double distanceFromAngleMovingLeft = Math.abs(wantedAngle - currentRobotAngle);
-        double distanceFromAngleMovingRight = Math.abs((360 - currentRobotAngle) + wantedAngle);
+        double angleDistanceFromAngleMovingLeft = Math.abs(wantedAngle - currentRobotAngle);
+        double angleDistanceLeft = findCircleDistanceAccordingToRL("LEFT",
+                angleDistanceFromAngleMovingLeft, currentRobotAngle);
+        double angleDistanceFromAngleMovingRight = (360 - currentRobotAngle) + wantedAngle;
+        double angleDistanceRight = findCircleDistanceAccordingToRL("RIGHT",
+                angleDistanceFromAngleMovingRight, currentRobotAngle);
+//        double distanceFromAngleMovingLeft = Math.abs(wantedAngle - currentRobotAngle);
+//        double distanceFromAngleMovingRight = Math.abs((360 - currentRobotAngle) + wantedAngle);
         boolean moveLeft = false;
         String moveInDirection = "";
-        if (distanceFromAngleMovingRight > distanceFromAngleMovingLeft) {
+        if (angleDistanceRight > angleDistanceLeft) {
             moveLeft = true;
             moveInDirection = "LEFT";
             leftFrontSpinDirectionStringValue = getWheelSpinDirectionFromWantedRotationDirection
@@ -323,6 +360,7 @@ public class AutomMotorMethods {
         }
         StageInfoHolder.put("stage1Duration", didItSurpassWantedTicksStage1);
         StageInfoHolder.put("stage1Velocity", (double) Stage1Velocity);
+        StageInfoHolder.put("stage1Ticks", (double)Stage1TicksTraveled);
         numStagesUsed += 1;
 
         if (reachedWantedTicks == false) {
@@ -339,6 +377,7 @@ public class AutomMotorMethods {
             }
             StageInfoHolder.put("stage2Duration", didItSurpassWantedTicksStage2);
             StageInfoHolder.put("stage2Velocity", (double) Stage2Velocity);
+            StageInfoHolder.put("stage2Ticks", (double)Stage2TicksTraveled);
             numStagesUsed += 1;
 
             if (reachedWantedTicks == false) {
@@ -355,6 +394,7 @@ public class AutomMotorMethods {
                 }
                 StageInfoHolder.put("stage3Duration", didItSurpassWantedTicksStage3);
                 StageInfoHolder.put("stage3Velocity", (double) Stage3Velocity);
+                StageInfoHolder.put("stage3Ticks", (double)Stage3TicksTraveled);
                 numStagesUsed += 1;
 
                 if (reachedWantedTicks == false) {
@@ -371,6 +411,7 @@ public class AutomMotorMethods {
                     }
                     StageInfoHolder.put("stage4Duration", didItSurpassWantedTicksStage4);
                     StageInfoHolder.put("stage4Velocity", (double) Stage4Velocity);
+                    StageInfoHolder.put("stage4Ticks", (double)Stage4TicksTraveled);
                     numStagesUsed += 1;
 
 //                    if (reachedWantedTicks == false) {
@@ -397,6 +438,7 @@ public class AutomMotorMethods {
                         }
                         StageInfoHolder.put("stage5Duration", didItSurpassWantedTicksStage5);
                         StageInfoHolder.put("stage5Velocity", (double) Stage5Velocity);
+                        StageInfoHolder.put("stage5Ticks", (double)Stage5TicksTraveled);
                         numStagesUsed += 1;
 
                         if (reachedWantedTicks == false) {
@@ -413,6 +455,7 @@ public class AutomMotorMethods {
                             }
                             StageInfoHolder.put("stage6Duration", didItSurpassWantedTicksStage6);
                             StageInfoHolder.put("stage6Velocity", (double) Stage6Velocity);
+                            StageInfoHolder.put("stage6Ticks", (double)Stage6TicksTraveled);
                             numStagesUsed += 1;
 
                             if (reachedWantedTicks == false) {
@@ -429,6 +472,7 @@ public class AutomMotorMethods {
                                 }
                                 StageInfoHolder.put("stage7Duration", didItSurpassWantedTicksStage7);
                                 StageInfoHolder.put("stage7Velocity", (double) Stage7Velocity);
+                                StageInfoHolder.put("stage7Ticks", (double)Stage7TicksTraveled);
                                 numStagesUsed += 1;
 
                                 if (reachedWantedTicks == false) {
@@ -445,6 +489,7 @@ public class AutomMotorMethods {
                                     }
                                     StageInfoHolder.put("stage8Duration", didItSurpassWantedTicksStage8);
                                     StageInfoHolder.put("stage8Velocity", (double) Stage8Velocity);
+                                    StageInfoHolder.put("stage8Ticks", (double)Stage8TicksTraveled);
                                     numStagesUsed += 1;
 
                                     if (reachedWantedTicks == false) {
@@ -461,6 +506,7 @@ public class AutomMotorMethods {
                                         }
                                         StageInfoHolder.put("stage9Duration", didItSurpassWantedTicksStage9);
                                         StageInfoHolder.put("stage9Velocity", (double) Stage9Velocity);
+                                        StageInfoHolder.put("stage9Ticks", (double)Stage9TicksTraveled);
                                         numStagesUsed += 1;
 
 //                                        if (reachedWantedTicks == false) {
@@ -487,6 +533,7 @@ public class AutomMotorMethods {
                                             }
                                             StageInfoHolder.put("stage10Duration", didItSurpassWantedTicksStage10);
                                             StageInfoHolder.put("stage10Velocity", (double) Stage10Velocity);
+                                            StageInfoHolder.put("stage10Ticks", (double)Stage10TicksTraveled);
                                             numStagesUsed += 1;
 
                                             if (reachedWantedTicks == false) {
@@ -503,6 +550,7 @@ public class AutomMotorMethods {
                                                 }
                                                 StageInfoHolder.put("stage11Duration", didItSurpassWantedTicksStage11);
                                                 StageInfoHolder.put("stage11Velocity", (double) Stage11Velocity);
+                                                StageInfoHolder.put("stage11Ticks", (double)Stage11TicksTraveled);
                                                 numStagesUsed += 1;
 
                                                 if (reachedWantedTicks == false) {
@@ -519,6 +567,7 @@ public class AutomMotorMethods {
                                                     }
                                                     StageInfoHolder.put("stage12Duration", didItSurpassWantedTicksStage12);
                                                     StageInfoHolder.put("stage12Velocity", (double) Stage12Velocity);
+                                                    StageInfoHolder.put("stage12Ticks", (double)Stage12TicksTraveled);
                                                     numStagesUsed += 1;
 
                                                     if (reachedWantedTicks == false) {
@@ -535,6 +584,7 @@ public class AutomMotorMethods {
                                                         }
                                                         StageInfoHolder.put("stage13Duration", didItSurpassWantedTicksStage13);
                                                         StageInfoHolder.put("stage13Velocity", (double) Stage13Velocity);
+                                                        StageInfoHolder.put("stage13Ticks", (double)Stage13TicksTraveled);
                                                         numStagesUsed += 1;
 
                                                         if (reachedWantedTicks == false) {
@@ -551,6 +601,7 @@ public class AutomMotorMethods {
                                                             }
                                                             StageInfoHolder.put("stage14Duration", didItSurpassWantedTicksStage14);
                                                             StageInfoHolder.put("stage14Velocity", (double) Stage14Velocity);
+                                                            StageInfoHolder.put("stage14Ticks", (double)Stage14TicksTraveled);
                                                             numStagesUsed += 1;
 
                                                             if (reachedWantedTicks == false) {
@@ -567,6 +618,7 @@ public class AutomMotorMethods {
                                                                 }
                                                                 StageInfoHolder.put("stage15Duration", didItSurpassWantedTicksStage15);
                                                                 StageInfoHolder.put("stage15Velocity", (double) Stage15Velocity);
+                                                                StageInfoHolder.put("stage15Ticks", (double)Stage15TicksTraveled);
                                                                 numStagesUsed += 1;
 
                                                                 if (reachedWantedTicks == false) {
@@ -583,6 +635,7 @@ public class AutomMotorMethods {
                                                                     }
                                                                     StageInfoHolder.put("stage16Duration", didItSurpassWantedTicksStage16);
                                                                     StageInfoHolder.put("stage16Velocity", (double) Stage16Velocity);
+                                                                    StageInfoHolder.put("stage16Ticks", (double)Stage16TicksTraveled);
                                                                     numStagesUsed += 1;
 
                                                                     if (reachedWantedTicks == false) {
@@ -599,6 +652,7 @@ public class AutomMotorMethods {
                                                                         }
                                                                         StageInfoHolder.put("stage17Duration", didItSurpassWantedTicksStage17);
                                                                         StageInfoHolder.put("stage17Velocity", (double) Stage17Velocity);
+                                                                        StageInfoHolder.put("stage17Ticks", (double)Stage17TicksTraveled);
                                                                         numStagesUsed += 1;
 
                                                                         if (reachedWantedTicks == false) {
@@ -615,6 +669,7 @@ public class AutomMotorMethods {
                                                                             }
                                                                             StageInfoHolder.put("stage18Duration", didItSurpassWantedTicksStage18);
                                                                             StageInfoHolder.put("stage18Velocity", (double) Stage18Velocity);
+                                                                            StageInfoHolder.put("stage18Ticks", (double)Stage18TicksTraveled);
                                                                             numStagesUsed += 1;
 
                                                                             if (reachedWantedTicks == false) {
@@ -631,6 +686,7 @@ public class AutomMotorMethods {
                                                                                 }
                                                                                 StageInfoHolder.put("stage19Duration", didItSurpassWantedTicksStage19);
                                                                                 StageInfoHolder.put("stage19Velocity", (double) Stage19Velocity);
+                                                                                StageInfoHolder.put("stage19Ticks", (double)Stage19TicksTraveled);
                                                                                 numStagesUsed += 1;
 
                                                                                 if (reachedWantedTicks == false) {
@@ -641,6 +697,7 @@ public class AutomMotorMethods {
                                                                                             true);
                                                                                     StageInfoHolder.put("stage20Duration", stage20Seconds);
                                                                                     StageInfoHolder.put("stage20Velocity", (double) Stage20Velocity);
+                                                                                    StageInfoHolder.put("stage20Ticks", (double)ticksLeftForStage20);
                                                                                     numStagesUsed += 1;
                                                                                 }
                                                                             }

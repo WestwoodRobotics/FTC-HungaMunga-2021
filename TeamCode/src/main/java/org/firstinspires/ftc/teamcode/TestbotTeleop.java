@@ -32,9 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -65,7 +63,7 @@ public class TestbotTeleop extends OpMode
     private DcMotorEx leftBackDrive = null;
     private DcMotorEx rightBackDrive = null;
     private DcMotorEx intakeDrive = null;
-    private Servo carouselServo = null;
+    private DcMotorEx carouselMotor = null;
     private Servo outtakeServo1 = null;
     private Servo outtakeServo2 = null;
     private DcMotorEx tunnelDrive =  null;
@@ -91,7 +89,7 @@ public class TestbotTeleop extends OpMode
         leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back");
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back");
         intakeDrive = hardwareMap.get(DcMotorEx.class, "intake");
-        carouselServo = hardwareMap.get(Servo.class, "carousel");
+        carouselMotor = hardwareMap.get(DcMotorEx.class, "carousel");
         outtakeServo1 = hardwareMap.get(Servo.class, "outtake1");
         outtakeServo2 = hardwareMap.get(Servo.class, "outtake2");
         //tunnelDrive = hardwareMap.get(DcMotorEx.class, "tunnel");
@@ -105,12 +103,11 @@ public class TestbotTeleop extends OpMode
         leftBackDrive.setDirection(DcMotorEx.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
         leftFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
-        intakeDrive.setDirection(DcMotorEx.Direction.REVERSE);
-        carouselServo.setDirection(Servo.Direction.FORWARD);
+        intakeDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        carouselMotor.setDirection(DcMotorEx.Direction.FORWARD);
         outtakeServo1.setDirection(Servo.Direction.FORWARD);
         outtakeServo2.setDirection(Servo.Direction.REVERSE);
         //tunnelDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        elevatorDrive.setDirection(DcMotorEx.Direction.FORWARD);
         elevatorDrive.setDirection(DcMotorEx.Direction.REVERSE);
 
 
@@ -124,6 +121,7 @@ public class TestbotTeleop extends OpMode
         rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         elevatorDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        carouselMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //tunnelDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
@@ -137,6 +135,7 @@ public class TestbotTeleop extends OpMode
         leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         intakeDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        carouselMotor.setVelocityPIDFCoefficients(15, 0, 0, 0);
         //tunnelDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
     }
 
@@ -186,10 +185,10 @@ public class TestbotTeleop extends OpMode
         boolean elevatorUp = gamepad1.dpad_up;
         boolean elevatorDown = gamepad1.dpad_down;
 
-        leftFrontPower   = drive - strafe - turn;
-        rightFrontPower  = drive + strafe + turn;
-        leftBackPower    = drive + strafe - turn;
-        rightBackPower   = drive - strafe + turn;
+        leftFrontPower   = -drive - strafe - turn;
+        rightFrontPower  = -drive - strafe + turn;
+        leftBackPower    = -drive + strafe - turn;
+        rightBackPower   = -drive + strafe + turn;
 
         double maxValue = Math.max(Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),Math.max(Math.abs(leftBackPower), Math.abs(rightBackPower)));
 
@@ -221,10 +220,10 @@ public class TestbotTeleop extends OpMode
         // rightPower = -gamepad1.right_stick_y ;
 
         // Send calculated velocity to wheels
-        leftFrontDrive.setVelocity(leftFrontPower * 3500);
-        rightBackDrive.setVelocity(rightBackPower * 3500);
-        leftBackDrive.setVelocity(leftBackPower * 3500);
-        rightFrontDrive.setVelocity(rightFrontPower * 3500);
+        leftFrontDrive.setVelocity(leftFrontPower * 4000);
+        rightBackDrive.setVelocity(rightBackPower * 4000);
+        leftBackDrive.setVelocity(leftBackPower * 4000);
+        rightFrontDrive.setVelocity(rightFrontPower * 4000);
 
         // intake objects in and out when the corresponding trigger is pressed
         if (intakeIn > 0) {
@@ -243,13 +242,13 @@ public class TestbotTeleop extends OpMode
 
         //carousel clockwise and counter clockwise spin when the corresponding button is pressed
         if (carouselCounterClock == true) {
-            carouselServo.setPosition(1);
+            carouselMotor.setVelocity(2800 * 1);
         }
         else if (carouselClockWise == true) {
-            carouselServo.setPosition(0);
+            carouselMotor.setVelocity(2800 * -1);
         }
         else {
-            carouselServo.setPosition(.5);
+            carouselMotor.setVelocity(0);
         }
 
         //outtake in and out when the corresponding button is pressed.

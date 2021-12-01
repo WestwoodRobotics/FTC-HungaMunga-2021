@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode;
-
 /* Copyright (c) 2017 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -58,8 +57,8 @@ import java.util.HashMap;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Basic: AutomCallerBlueAndRedSideParkInWhitePlace", group="Linear Opmode")
-public class Auton2and4 extends LinearOpMode {
+@Autonomous(name="Basic: testingAutonMovements", group="Linear Opmode")
+public class testingAutonMovements extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -68,7 +67,7 @@ public class Auton2and4 extends LinearOpMode {
     private DcMotorEx leftBackDrive = null;
     private DcMotorEx rightBackDrive = null;
     private double globalMovementTimer = 0;
-    final int robotVelocity = 560;
+    final int robotVelocity = 2800;
     private Servo carouselServo = null;
 
     //    private AutomMotorMethods LFDMethods = new AutomMotorMethods(3500, 0.0,
@@ -703,24 +702,23 @@ public class Auton2and4 extends LinearOpMode {
         leftBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        leftFrontDrive.setVelocityPIDFCoefficients(17, 0, 0, 0);
-        rightFrontDrive.setVelocityPIDFCoefficients(17, 0, 0, 0);
-        leftBackDrive.setVelocityPIDFCoefficients(17, 0, 0, 0);
-        rightBackDrive.setVelocityPIDFCoefficients(17, 0, 0, 0);
+        leftFrontDrive.setVelocityPIDFCoefficients(20, 0, 0, 0);
+        rightFrontDrive.setVelocityPIDFCoefficients(20, 0, 0, 0);
+        leftBackDrive.setVelocityPIDFCoefficients(20, 0, 0, 0);
+        rightBackDrive.setVelocityPIDFCoefficients(20, 0, 0, 0);
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
 
-        double matSize = 2*(24*25.4);
+//        double matSize = 2*(24*25.4);
+        double matSize = 7.5398223686155035+15.079644737231007+22.61946710584651+30.159289474462014+37.69911184307752+45.23893421169302+52.778756580308524+60.31857894892403+67.85840131753953+75.39822368615503+82.93804605477054+90.47786842338604+20.465232143384938;
+        double matSize2 = 6*((24+7)*25.4);
+
 
         // run until the end of the match (driver presses STOP)
 
-        moveForwardOrBackwardsDistance(matSize+2000, generalMotorMethods, "BACKWARDS");
-
-        while (runtime.seconds() < 30) {
-
-        }
+        moveForwardOrBackwardsDistance(matSize2, generalMotorMethods, "FORWARDS");
 
 
 
@@ -732,4 +730,6 @@ public class Auton2and4 extends LinearOpMode {
 
     }
 }
+
+
 
