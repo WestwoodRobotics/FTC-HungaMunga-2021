@@ -54,7 +54,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name="Hunga Munga: Teleop", group="Iterative Opmode")
 
-public class TestbotTeleop extends OpMode
+public class Teleop extends OpMode
+
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -99,10 +100,10 @@ public class TestbotTeleop extends OpMode
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        rightBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotorEx.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        leftFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotorEx.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
+        leftFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
         intakeDrive.setDirection(DcMotorEx.Direction.FORWARD);
         carouselMotor.setDirection(DcMotorEx.Direction.FORWARD);
         outtakeServo1.setDirection(Servo.Direction.FORWARD);
@@ -172,7 +173,7 @@ public class TestbotTeleop extends OpMode
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
         double strafe = gamepad1.left_stick_x;
-        double drive = gamepad1.left_stick_y;
+        double drive = -gamepad1.left_stick_y;
         double turn  =  gamepad1.right_stick_x;
         double intakeIn = gamepad1.left_trigger;
         double intakeOut = gamepad1.right_trigger;
@@ -185,12 +186,19 @@ public class TestbotTeleop extends OpMode
         boolean elevatorUp = gamepad1.dpad_up;
         boolean elevatorDown = gamepad1.dpad_down;
 
-        leftFrontPower   = -drive - strafe - turn;
-        rightFrontPower  = -drive - strafe + turn;
-        leftBackPower    = -drive + strafe - turn;
-        rightBackPower   = -drive + strafe + turn;
+//        Correct equations:
+        leftFrontPower   = drive + strafe + turn;
+        rightFrontPower  = drive - strafe - turn;
+        leftBackPower    = drive - strafe + turn;
+        rightBackPower   = drive + strafe - turn;
 
-        double maxValue = Math.max(Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),Math.max(Math.abs(leftBackPower), Math.abs(rightBackPower)));
+//        leftFrontPower   = -drive - strafe - turn;
+//        rightFrontPower  = -drive - strafe + turn;
+//        leftBackPower    = -drive + strafe - turn;
+//        rightBackPower   = -drive + strafe + turn;
+
+        double maxValue = Math.max(Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),
+                Math.max(Math.abs(leftBackPower), Math.abs(rightBackPower)));
 
         if (maxValue > 1) {
             leftFrontPower /= maxValue;
@@ -220,10 +228,10 @@ public class TestbotTeleop extends OpMode
         // rightPower = -gamepad1.right_stick_y ;
 
         // Send calculated velocity to wheels
-        leftFrontDrive.setVelocity(leftFrontPower * 4000);
-        rightBackDrive.setVelocity(rightBackPower * 4000);
-        leftBackDrive.setVelocity(leftBackPower * 4000);
-        rightFrontDrive.setVelocity(rightFrontPower * 4000);
+        leftFrontDrive.setVelocity(leftFrontPower * 3000);
+        rightBackDrive.setVelocity(rightBackPower * 3000);
+        leftBackDrive.setVelocity(leftBackPower * 3000);
+        rightFrontDrive.setVelocity(rightFrontPower * 3000);
 
         // intake objects in and out when the corresponding trigger is pressed
         if (intakeIn > 0) {
@@ -242,10 +250,10 @@ public class TestbotTeleop extends OpMode
 
         //carousel clockwise and counter clockwise spin when the corresponding button is pressed
         if (carouselCounterClock == true) {
-            carouselMotor.setVelocity(2800 * 1);
+            carouselMotor.setVelocity(3000 * 1);// 2800
         }
         else if (carouselClockWise == true) {
-            carouselMotor.setVelocity(2800 * -1);
+            carouselMotor.setVelocity(3000 * -1);// 2800
         }
         else {
             carouselMotor.setVelocity(0);

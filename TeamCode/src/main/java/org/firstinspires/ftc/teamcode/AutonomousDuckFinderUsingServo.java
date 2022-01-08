@@ -1,63 +1,32 @@
 package org.firstinspires.ftc.teamcode;
 
-/* Copyright (c) 2019 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-/**
- * This 2020-2021 OpMode illustrates the basics of using the TensorFlow Object Detection API to
- * determine the position of the Freight Frenzy game elements.
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
- *
- * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
- * is explained below.
- */
-@Autonomous(name = "IdentifyingDuckWithServos", group = "Linear Opmode")
-public class IdentifyingDuck extends LinearOpMode {
+public class AutonomousDuckFinderUsingServo extends LinearOpMode{
     private ElapsedTime runtime = new ElapsedTime();
-    private Servo testServo = null;
     private double globalMovementTimer = 0;
-    private double servoMovementDuration = 2;
+    private int servoMovementDuration = 2000; // set in milliseconds
+    double servoMovement = .3;// from 0 - 1
+    private Servo cameraServo = null;
+    // a wheel will be moved accordingly depending on where the camera detected the ducky
+    private DcMotorEx leftFrontDrive = null;
+    private DcMotorEx leftBackDrive = null;
+    private DcMotorEx rightBackDrive = null;
 
     /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains
      * the following 4 detectable objects
@@ -90,6 +59,7 @@ public class IdentifyingDuck extends LinearOpMode {
      * Once you've obtained a license key, copy the string from the Vuforia web site
      * and paste it in to your code on the next line, between the double quotes.
      */
+    // put your own key my key might be all used up by now
     private static final String VUFORIA_KEY =
             "Afl+RML/////AAABmaMhjqdoa0n5o+LOBUlDi2FnRR3PvjXoX9GXBYOqhEzqDK5EKlhfk7DF9xzcZYPAYSpcyiB" +
                     "sR9g89nQniC//pOf07VI7X8ajr5AWIGShrW3kPrD1uIlLG7IXWGA6AdL2onK51Nebvu7Qqim+BPqJRa" +
@@ -108,30 +78,33 @@ public class IdentifyingDuck extends LinearOpMode {
      * Detection engine.
      */
     private TFObjectDetector tfod;
+    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
 
-    public boolean foundDuck() {
-        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-        boolean foundDuck = false;
-        if ( updatedRecognitions != null) {
-            int recognitionSize = updatedRecognitions.size();
-            for (Recognition recognition : updatedRecognitions) {
-                if (recognition.getLabel().equals("Duck")) {
-                    foundDuck = true;
-                }
-            }
+    public boolean findDuck(int tries) {
+        updatedRecognitions = tfod.getUpdatedRecognitions();
+        int foundDucky = foundDuck();
+        if (!updatedRecognitions.get(foundDucky).equals(0)) {
+            return true;
+        }
+        else if (tries <= 0) {
+            return false;
         }
         else {
-            updatedRecognitions = tfod.getUpdatedRecognitions();
-            if ( updatedRecognitions != null) {
-                int recognitionSize = updatedRecognitions.size();
-                for (Recognition recognition : updatedRecognitions) {
-                    if (recognition.getLabel().equals("Duck")) {
-                        foundDuck = true;
-                    }
-                }
-            }
+//            sleep(250); use sleep if you want to keep track of how much time was lost in searching
+            return findDuck(tries-1);
         }
-        return foundDuck;
+    }
+
+    public int foundDuck() {
+        int index = 0;
+        for (Recognition recognition : updatedRecognitions) {
+            String currentLabel = recognition.getLabel();
+            if (currentLabel.equals("Duck")) {
+                return index;
+            }
+            index += 1;
+        }
+        return 0;
     }
 
     @Override
@@ -140,6 +113,30 @@ public class IdentifyingDuck extends LinearOpMode {
         // first.
         initVuforia();
         initTfod();
+
+        leftFrontDrive  = hardwareMap.get(DcMotorEx.class, "left_front");
+        leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back");
+        rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back");
+        cameraServo = hardwareMap.get(Servo.class, "cameraServo");
+
+        rightBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        leftFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        cameraServo.setDirection(Servo.Direction.FORWARD);
+
+        leftFrontDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+
+        leftFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+
+        // you set your starting position (try to keep is to a 0 or 1 for later code to actually work)
+        cameraServo.setPosition(0);
+        // sleep does in milliseconds - 1 second = 1000 seconds
+        // test out how fast a servo moves to know the actual amount of time you should give it to move
+        sleep(servoMovementDuration);
 
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
@@ -155,12 +152,8 @@ public class IdentifyingDuck extends LinearOpMode {
             // should be set to the value of the images used to create the TensorFlow Object Detection model
             // (typically 16/9).
             tfod.setZoom(1.2, 16.0/9.0);
+            // 1 zoom mean you use the whole camera(play around with it to find a good zoom)
         }
-
-        testServo = hardwareMap.get(Servo.class, "outtake2");
-        testServo.setDirection(Servo.Direction.FORWARD);
-        testServo.setPosition(0.0);
-        sleep(5000);
 
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start op mode");
@@ -168,51 +161,39 @@ public class IdentifyingDuck extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        testServo.setPosition(.5);
-        sleep(5000);
+        /*
+         adjust zoom till it sees 1 possible place where the ducky can be but
+         has a big enough range that it won't need the most perfect placement to see the spot
+         */
+        tfod.setZoom(2.7, 16.0/9.0);
 
-        testServo.setPosition(1.0);
-        sleep(5000);
-//        testServo.setPosition(0); // needs to be tested for correct position
-//        while (runtime.seconds() < globalMovementTimer + servoMovementDuration) { }
-//        boolean foundIt = this.foundDuck();
-//        if (foundIt == false) {
-//            testServo.setPosition(.5); // needs to be tested for correct position
-//            while (runtime.seconds() < globalMovementTimer + servoMovementDuration) { }
-//            foundIt = this.foundDuck();
-//            if (foundIt == false) {
-//                testServo.setPosition(0); // needs to be tested for correct position
-//                while (runtime.seconds() < globalMovementTimer + servoMovementDuration) { }
-//                foundIt = this.foundDuck();
-//            }
-//        }
+        /*
+            depending on what was your starting position of your servo, then that decides what spot
+            you just recognized (try to make your starting position one of the side markers
+            as if you make it the middle marker then the movement won't be as linear)
+        */
+        boolean wasThereDuck = findDuck(10);
+        if (wasThereDuck) {
+            leftBackDrive.setVelocity(3500);
+            sleep(1000);
+        }
+        else {
+            cameraServo.setPosition(servoMovement);
+            sleep(servoMovementDuration);
+            wasThereDuck = findDuck(10);
+            if (wasThereDuck) {
+                rightBackDrive.setVelocity(3500);
+                sleep(1000);
+            }
 
-
-
-//        if (opModeIsActive()) {
-//            while (opModeIsActive()) {
-//                if (tfod != null) {
-//                    // getUpdatedRecognitions() will return null if no new information is available since
-//                    // the last time that call was made.
-//                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-//                    if (updatedRecognitions != null) {
-//                        telemetry.addData("# Object Detected", updatedRecognitions.size());
-//
-//                        // step through the list of recognitions and display boundary info.
-//                        int i = 0;
-//                        for (Recognition recognition : updatedRecognitions) {
-//                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-//                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-//                                    recognition.getLeft(), recognition.getTop());
-//                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-//                                    recognition.getRight(), recognition.getBottom());
-//                            i++;
-//                        }
-//                        telemetry.update();
-//                    }
-//                }
-//            }
-//        }
+            else {
+                /*
+                if we already checked two spots then it must be in the last spot if the code worked
+                 */
+                leftFrontDrive.setVelocity(3500);
+                sleep(1000);
+            }
+        }
     }
 
     /**

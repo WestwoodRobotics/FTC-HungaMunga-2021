@@ -57,7 +57,7 @@ import java.util.HashMap;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Basic: testingAutonMovements", group="Linear Opmode")
+@Autonomous(name="Basic: MoveForward1.5matsAUTON", group="Linear Opmode")
 public class testingAutonMovements extends LinearOpMode {
 
     // Declare OpMode members.
@@ -67,7 +67,7 @@ public class testingAutonMovements extends LinearOpMode {
     private DcMotorEx leftBackDrive = null;
     private DcMotorEx rightBackDrive = null;
     private double globalMovementTimer = 0;
-    final int robotVelocity = 2800;
+    final int robotVelocity = 3600;
     private Servo carouselServo = null;
 
     //    private AutomMotorMethods LFDMethods = new AutomMotorMethods(3500, 0.0,
@@ -687,7 +687,6 @@ public class testingAutonMovements extends LinearOpMode {
         rightFrontDrive = hardwareMap.get(DcMotorEx.class, "right_front");
         leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back");
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back");
-        carouselServo = hardwareMap.get(Servo.class, "carousel");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -695,7 +694,6 @@ public class testingAutonMovements extends LinearOpMode {
         leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
         leftFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        carouselServo.setDirection(Servo.Direction.FORWARD);
 
         leftFrontDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -713,12 +711,12 @@ public class testingAutonMovements extends LinearOpMode {
 
 //        double matSize = 2*(24*25.4);
         double matSize = 7.5398223686155035+15.079644737231007+22.61946710584651+30.159289474462014+37.69911184307752+45.23893421169302+52.778756580308524+60.31857894892403+67.85840131753953+75.39822368615503+82.93804605477054+90.47786842338604+20.465232143384938;
-        double matSize2 = 6*((24+7)*25.4);
+        double matSize2 = (24+7)*25.4;
 
 
         // run until the end of the match (driver presses STOP)
 
-        moveForwardOrBackwardsDistance(matSize2, generalMotorMethods, "FORWARDS");
+        moveForwardOrBackwardsDistance(matSize2 * 4, generalMotorMethods, "FORWARDS");
 
 
 

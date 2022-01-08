@@ -34,6 +34,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.SwitchableCamera;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -93,6 +95,12 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
     private VuforiaLocalizer vuforia;
 
     /**
+     * Variables used for switching cameras.
+     */
+    private WebcamName webcam1, webcam2;
+    private SwitchableCamera switchableCamera;
+
+    /**
      * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
      * Detection engine.
      */
@@ -118,13 +126,14 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
             // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
             // should be set to the value of the images used to create the TensorFlow Object Detection model
             // (typically 16/9).
-            tfod.setZoom(2.5, 16.0/9.0);
+            tfod.setZoom(1, 16.0/9.0);
         }
 
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
         waitForStart();
+        int runs = 0;
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
@@ -142,12 +151,15 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
                         telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
                                           recognition.getLeft(), recognition.getTop());
                         telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                recognition.getRight(), recognition.getBottom());
+                                recognition.getRight(), runs);
+
                         i++;
                       }
+                      telemetry.addData("runs: ", runs);
                       telemetry.update();
                     }
                 }
+                runs += 1;
             }
         }
     }
@@ -166,6 +178,10 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Set the active camera to Webcam 1.
+        switchableCamera = (SwitchableCamera) vuforia.getCamera();
+        switchableCamera.setActiveCamera(webcam1);
 
         // Loading trackables is not necessary for the TensorFlow Object Detection engine.
     }
