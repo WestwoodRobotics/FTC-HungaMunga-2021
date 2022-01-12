@@ -25,15 +25,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @TeleOp(name = "TestingElevatorDistances", group = "Iterative Opmode")
 public class EstablishElavatorDistances extends LinearOpMode {
 
-    private DistanceSensor sensorRange;
+    private DistanceSensor elevatorSensor;
     private Servo outtakeServo1 = null;
     private Servo outtakeServo2 = null;
     private DcMotorEx elevatorDrive = null;
+    // distance to 3 level is 37.7 cm
+    // distance to 2 level is 26.5 cm
+    // distance to 1 level is 19.5 cm
 
     @Override
     public void runOpMode() {
         // you can use this as a regular DistanceSensor.
-        sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
+        elevatorSensor = hardwareMap.get(DistanceSensor.class, "elevatorSensor");
         outtakeServo1 = hardwareMap.get(Servo.class, "outtake1");
         outtakeServo2 = hardwareMap.get(Servo.class, "outtake2");
         elevatorDrive = hardwareMap.get(DcMotorEx.class, "elevator");
@@ -46,7 +49,7 @@ public class EstablishElavatorDistances extends LinearOpMode {
 
         // you can also cast this to a Rev2mDistanceSensor if you want to use added
         // methods associated with the Rev2mDistanceSensor class.
-        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)sensorRange;
+        //Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)elevatorSensor;
 
         telemetry.addData(">>", "Press start to continue");
         telemetry.update();
@@ -82,15 +85,15 @@ public class EstablishElavatorDistances extends LinearOpMode {
             }
 
             // generic DistanceSensor methods.
-            telemetry.addData("deviceName",sensorRange.getDeviceName() );
-            telemetry.addData("range", String.format("%.01f mm", sensorRange.getDistance(DistanceUnit.MM)));
-            telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
-            telemetry.addData("range", String.format("%.01f m", sensorRange.getDistance(DistanceUnit.METER)));
-            telemetry.addData("range", String.format("%.01f in", sensorRange.getDistance(DistanceUnit.INCH)));
+            telemetry.addData("deviceName",elevatorSensor.getDeviceName() );
+            telemetry.addData("range", String.format("%.01f mm", elevatorSensor.getDistance(DistanceUnit.MM)));
+            telemetry.addData("range", String.format("%.01f cm", elevatorSensor.getDistance(DistanceUnit.CM)));
+            telemetry.addData("range", String.format("%.01f m", elevatorSensor.getDistance(DistanceUnit.METER)));
+            telemetry.addData("range", String.format("%.01f in", elevatorSensor.getDistance(DistanceUnit.INCH)));
 
             // Rev2mDistanceSensor specific methods.
-            telemetry.addData("ID", String.format("%x", sensorTimeOfFlight.getModelID()));
-            telemetry.addData("did time out", Boolean.toString(sensorTimeOfFlight.didTimeoutOccur()));
+            //telemetry.addData("ID", String.format("%x", sensorTimeOfFlight.getModelID()));
+            //telemetry.addData("did time out", Boolean.toString(sensorTimeOfFlight.didTimeoutOccur()));
 
             telemetry.update();
 

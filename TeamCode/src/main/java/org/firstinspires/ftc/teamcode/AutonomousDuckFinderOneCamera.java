@@ -169,7 +169,7 @@ public class AutonomousDuckFinderOneCamera extends LinearOpMode {
         // image our screen has 30 pixel left to right, this is how it would be split
         // camera is 1280*720 pixels
 
-        //updatedRecognitions = findDuck(10);
+        updatedRecognitions = findDuck(10);
         int duckIndex = foundDuck(updatedRecognitions);
         telemetry.addData("find duck?", duckIndex);
 
