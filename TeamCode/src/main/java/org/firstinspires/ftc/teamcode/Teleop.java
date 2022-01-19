@@ -113,8 +113,8 @@ public class Teleop extends OpMode
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         rightBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotorEx.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
         leftFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
 //        intakeDrive.setDirection(DcMotorEx.Direction.FORWARD);
 //        carouselMotor.setDirection(DcMotorEx.Direction.FORWARD);
@@ -200,10 +200,10 @@ public class Teleop extends OpMode
 //        boolean elevatorDown = gamepad1.dpad_down;
 
 //        Correct equations:
-        leftFrontPower   = drive - strafe - turn;
-        rightFrontPower  = -drive - strafe - turn;
-        leftBackPower    = -drive - strafe + turn;
-        rightBackPower   = drive - strafe + turn;
+        leftFrontPower   = drive + strafe + turn;
+        rightFrontPower  = drive - strafe - turn;
+        leftBackPower    = drive - strafe + turn;
+        rightBackPower   = drive + strafe - turn;
 
 //        leftFrontPower   = -drive - strafe - turn;
 //        rightFrontPower  = -drive - strafe + turn;

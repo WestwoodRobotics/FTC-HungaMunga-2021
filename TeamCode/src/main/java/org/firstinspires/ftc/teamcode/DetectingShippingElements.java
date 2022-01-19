@@ -44,11 +44,10 @@ public class DetectingShippingElements extends LinearOpMode {
      *  FreightFrenzy_DM.tflite  0: Duck,  1: Marker
      */
 
-    private static final String TFOD_MODEL_ASSET = "ObjectsTest.tflite";
+    private static final String TFOD_MODEL_ASSET = "gameElements_edgetpu.tflite";
     private static final String[] LABELS = {
-            "dcuk",
-            "block",
-            "circle"
+            "Me",
+            "Calculator"
     };
 
     /*
