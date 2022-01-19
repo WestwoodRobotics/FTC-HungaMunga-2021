@@ -209,4 +209,9 @@ public class AutonMethods {
 
     }
 
+
+
+    public int motionProfileGenerator(int desiredTicksPerSecond) {
+        return 0;
+    }
 }

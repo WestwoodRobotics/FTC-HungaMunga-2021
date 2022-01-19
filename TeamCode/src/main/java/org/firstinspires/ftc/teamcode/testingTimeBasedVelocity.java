@@ -60,6 +60,16 @@ public class testingTimeBasedVelocity extends LinearOpMode {
     private DcMotorEx testMotor = null;
     private DcMotor rightDrive = null;
 
+    public void testMethodMotorMove(double testMotorPower) {
+        while (runtime.seconds() < 2) {
+            testMotor.setVelocity(testMotorPower * 3500);
+        }
+    }
+
+    public void testMrthodStopMotor() {
+        testMotor.setVelocity(0);
+    }
+
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -79,27 +89,33 @@ public class testingTimeBasedVelocity extends LinearOpMode {
         runtime.reset();
         double testMotorPower = 1;
 
+        testMethodMotorMove(testMotorPower);
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("Motors", "testMotor (%.2f)", testMotorPower);
+        telemetry.update();
+        testMrthodStopMotor();
+
         // run until the end of the match (driver presses STOP)
-        while (runtime.seconds() <= 2) {
-
-            // Setup a variable for each drive wheel to save power level for telemetry
-
-            // Tank Mode uses one stick to control each wheel.
-            // - This requires no math, but it is hard to drive forward slowly and keep straight.
-            // leftPower  = -gamepad1.left_stick_y ;
-            // rightPower = -gamepad1.right_stick_y ;
-
-            // Send calculated power to wheels
-            testMotor.setVelocity(testMotorPower * 3500);
-
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors", "testMotor (%.2f)", testMotorPower);
-            telemetry.update();
-        }
-        while (runtime.seconds() < 30) {
-            testMotorPower = 0;
-            testMotor.setVelocity(0);
-        }
+//        while (runtime.seconds() <= 2) {
+//
+//            // Setup a variable for each drive wheel to save power level for telemetry
+//
+//            // Tank Mode uses one stick to control each wheel.
+//            // - This requires no math, but it is hard to drive forward slowly and keep straight.
+//            // leftPower  = -gamepad1.left_stick_y ;
+//            // rightPower = -gamepad1.right_stick_y ;
+//
+//            // Send calculated power to wheels
+//            testMethodMotorMove(testMotorPower);
+//
+//            // Show the elapsed game time and wheel power.
+//            telemetry.addData("Status", "Run Time: " + runtime.toString());
+//            telemetry.addData("Motors", "testMotor (%.2f)", testMotorPower);
+//            telemetry.update();
+//        }
+//        while (runtime.seconds() < 30) {
+//            testMotorPower = 0;
+//            testMotor.setVelocity(0);
+//        }
     }
 }

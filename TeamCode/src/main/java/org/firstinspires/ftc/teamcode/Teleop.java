@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -52,9 +53,10 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Hunga Munga:: Teleop", group="Iterative Opmode")
+@TeleOp(name="Hunga Munga: Teleop", group="Iterative Opmode")
 
-public class TestbotTeleop extends OpMode
+public class Teleop extends OpMode
+
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -62,12 +64,23 @@ public class TestbotTeleop extends OpMode
     private DcMotorEx rightFrontDrive = null;
     private DcMotorEx leftBackDrive = null;
     private DcMotorEx rightBackDrive = null;
-    private DcMotorEx intakeDrive = null;
-    private DcMotorEx carouselMotor = null;
-    private Servo outtakeServo1 = null;
-    private Servo outtakeServo2 = null;
-    private DcMotorEx tunnelDrive =  null;
-    private DcMotorEx elevatorDrive = null;
+//    private DcMotorEx intakeDrive = null;
+    private Servo carousel1 = null;
+//    private Servo outtakeServo1 = null;
+//    private Servo outtakeServo2 = null;
+//    private DcMotorEx tunnelDrive =  null;
+//    private DcMotorEx elevatorDrive = null;
+    private int dpad_rightToggle = 0;
+    private boolean dpadr_pressed = false;
+    private int dpad_upToggle = 0;
+    private boolean dpadu_pressed = false;
+    private int dpad_leftToggle = 0;
+    private boolean dpadl_pressed = false;
+    private int dpad_downToggle = 0;
+    private boolean dpadd_pressed = false;
+    private int lastSpeed = 0;
+    private boolean sfModePast = false;
+    private int sfModeCounter = 0;
 
 //    DcMotor tester = null;
 //    DcMotorEx.RunMode.RUN_TO_POSITION;
@@ -88,27 +101,27 @@ public class TestbotTeleop extends OpMode
         rightFrontDrive = hardwareMap.get(DcMotorEx.class, "right_front");
         leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back");
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back");
-        intakeDrive = hardwareMap.get(DcMotorEx.class, "intake");
-        carouselMotor = hardwareMap.get(DcMotorEx.class, "carousel");
-        outtakeServo1 = hardwareMap.get(Servo.class, "outtake1");
-        outtakeServo2 = hardwareMap.get(Servo.class, "outtake2");
+//        intakeDrive = hardwareMap.get(DcMotorEx.class, "intake");
+        carousel1 = hardwareMap.get(Servo.class, "carousel1");
+//        outtakeServo1 = hardwareMap.get(Servo.class, "outtake1");
+//        outtakeServo2 = hardwareMap.get(Servo.class, "outtake2");
         //tunnelDrive = hardwareMap.get(DcMotorEx.class, "tunnel");
-        elevatorDrive = hardwareMap.get(DcMotorEx.class, "elevator");
+//        elevatorDrive = hardwareMap.get(DcMotorEx.class, "elevator");
 
 
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         rightBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotorEx.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        leftFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
-        intakeDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        carouselMotor.setDirection(DcMotorEx.Direction.FORWARD);
-        outtakeServo1.setDirection(Servo.Direction.FORWARD);
-        outtakeServo2.setDirection(Servo.Direction.REVERSE);
+        leftFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
+//        intakeDrive.setDirection(DcMotorEx.Direction.FORWARD);
+//        carouselMotor.setDirection(DcMotorEx.Direction.FORWARD);
+//        outtakeServo1.setDirection(Servo.Direction.FORWARD);
+//        outtakeServo2.setDirection(Servo.Direction.REVERSE);
         //tunnelDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        elevatorDrive.setDirection(DcMotorEx.Direction.REVERSE);
+//        elevatorDrive.setDirection(DcMotorEx.Direction.REVERSE);
 
 
         // Tell the driver that initialization is complete.
@@ -119,9 +132,9 @@ public class TestbotTeleop extends OpMode
         rightFrontDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        elevatorDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        carouselMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        elevatorDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        carouselMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //tunnelDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
@@ -134,8 +147,8 @@ public class TestbotTeleop extends OpMode
         rightFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
-        intakeDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
-        carouselMotor.setVelocityPIDFCoefficients(15, 0, 0, 0);
+//        intakeDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+//        carouselMotor.setVelocityPIDFCoefficients(15, 0, 0, 0);
         //tunnelDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
     }
 
@@ -172,25 +185,33 @@ public class TestbotTeleop extends OpMode
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
         double strafe = gamepad1.left_stick_x;
-        double drive = gamepad1.left_stick_y;
+        double drive = -gamepad1.left_stick_y;
         double turn  =  gamepad1.right_stick_x;
-        double intakeIn = gamepad1.left_trigger;
-        double intakeOut = gamepad1.right_trigger;
+//        double intakeIn = gamepad1.left_trigger;
+//        double intakeOut = gamepad1.right_trigger;
 //        double intakeIn = gamepad1.right_trigger;
 //        double intakeOut = gamepad1.left_trigger;
         boolean carouselCounterClock = gamepad1.a;
         boolean carouselClockWise = gamepad1.y;
-        boolean outtakeIn = gamepad1.left_bumper;
-        boolean outtakeOut = gamepad1.right_bumper;
-        boolean elevatorUp = gamepad1.dpad_up;
-        boolean elevatorDown = gamepad1.dpad_down;
+        boolean sfModeCurrent = gamepad1.b;
+//        boolean outtakeIn = gamepad1.left_bumper;
+//        boolean outtakeOut = gamepad1.right_bumper;
+//        boolean elevatorUp = gamepad1.dpad_up;
+//        boolean elevatorDown = gamepad1.dpad_down;
 
-        leftFrontPower   = -drive - strafe - turn;
-        rightFrontPower  = -drive - strafe + turn;
-        leftBackPower    = -drive + strafe - turn;
-        rightBackPower   = -drive + strafe + turn;
+//        Correct equations:
+        leftFrontPower   = drive - strafe - turn;
+        rightFrontPower  = -drive - strafe - turn;
+        leftBackPower    = -drive - strafe + turn;
+        rightBackPower   = drive - strafe + turn;
 
-        double maxValue = Math.max(Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),Math.max(Math.abs(leftBackPower), Math.abs(rightBackPower)));
+//        leftFrontPower   = -drive - strafe - turn;
+//        rightFrontPower  = -drive - strafe + turn;
+//        leftBackPower    = -drive + strafe - turn;
+//        rightBackPower   = -drive + strafe + turn;
+
+        double maxValue = Math.max(Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),
+                Math.max(Math.abs(leftBackPower), Math.abs(rightBackPower)));
 
         if (maxValue > 1) {
             leftFrontPower /= maxValue;
@@ -199,17 +220,39 @@ public class TestbotTeleop extends OpMode
             rightBackPower /= maxValue;
         }
 
-        if (intakeIn > 0) {
-            //intakeDrive.setVelocity(intakeIn * 1000);
-            intakeDrive.setPower(intakeIn);
+        if (sfModePast != sfModeCurrent) {
+            sfModePast = sfModeCurrent;
+            if ( sfModeCounter == 2) {
+                sfModeCounter = 0;
+            }
+            else {
+                sfModeCounter += 1;
+            }
         }
-        else if (intakeOut > 0){
-            //intakeDrive.setVelocity(intakeOut * -1000);
-            intakeDrive.setPower(-intakeOut);
+
+        if (sfModeCounter == 2) {
+            leftFrontDrive.setVelocity(leftFrontPower * 1000);
+            rightBackDrive.setVelocity(rightBackPower * 1000);
+            leftBackDrive.setVelocity(leftBackPower * 1000);
+            rightFrontDrive.setVelocity(rightFrontPower * 1000);
         }
         else {
-            intakeDrive.setPower(0);
+            leftFrontDrive.setVelocity(leftFrontPower * 3000);
+            rightBackDrive.setVelocity(rightBackPower * 3000);
+            leftBackDrive.setVelocity(leftBackPower * 3000);
+            rightFrontDrive.setVelocity(rightFrontPower * 3000);
         }
+//        if (intakeIn > 0) {
+//            //intakeDrive.setVelocity(intakeIn * 1000);
+//            intakeDrive.setPower(intakeIn);
+//        }
+//        else if (intakeOut > 0){
+//            //intakeDrive.setVelocity(intakeOut * -1000);
+//            intakeDrive.setPower(-intakeOut);
+//        }
+//        else {
+//            intakeDrive.setPower(0);
+//        }
 
 
 
@@ -219,61 +262,61 @@ public class TestbotTeleop extends OpMode
         // leftPower  = -gamepad1.left_stick_y ;
         // rightPower = -gamepad1.right_stick_y ;
 
-        // Send calculated velocity to wheels
-        leftFrontDrive.setVelocity(leftFrontPower * 4000);
-        rightBackDrive.setVelocity(rightBackPower * 4000);
-        leftBackDrive.setVelocity(leftBackPower * 4000);
-        rightFrontDrive.setVelocity(rightFrontPower * 4000);
+//        // Send calculated velocity to wheels
+//        leftFrontDrive.setVelocity(leftFrontPower * 3000);
+//        rightBackDrive.setVelocity(rightBackPower * 3000);
+//        leftBackDrive.setVelocity(leftBackPower * 3000);
+//        rightFrontDrive.setVelocity(rightFrontPower * 3000);
 
         // intake objects in and out when the corresponding trigger is pressed
-        if (intakeIn > 0) {
-            intakeDrive.setVelocity(intakeIn * -4000);
-            //tunnelDrive.setVelocity(intakeIn * -4000);
-            //intakeDrive.setPower(intakeIn);
-        }
-        else if (intakeOut > 0){
-            intakeDrive.setVelocity(intakeOut * 4000);
-            //intakeDrive.setPower(-intakeOut);
-        }
-        else {
-            intakeDrive.setPower(0);
-        }
+//        if (intakeIn > 0) {
+//            intakeDrive.setVelocity(intakeIn * -4000);
+//            //tunnelDrive.setVelocity(intakeIn * -4000);
+//            //intakeDrive.setPower(intakeIn);
+//        }
+//        else if (intakeOut > 0){
+//            intakeDrive.setVelocity(intakeOut * 4000);
+//            //intakeDrive.setPower(-intakeOut);
+//        }
+//        else {
+//            intakeDrive.setPower(0);
+//        }
 
 
         //carousel clockwise and counter clockwise spin when the corresponding button is pressed
         if (carouselCounterClock == true) {
-            carouselMotor.setVelocity(2800 * 1);
+            carousel1.setPosition(1);
         }
         else if (carouselClockWise == true) {
-            carouselMotor.setVelocity(2800 * -1);
+            carousel1.setPosition(0);
         }
         else {
-            carouselMotor.setVelocity(0);
+            carousel1.setPosition(.5);
         }
 
         //outtake in and out when the corresponding button is pressed.
-        if (outtakeOut== true) {
-            outtakeServo1.setPosition(1);
-            outtakeServo2.setPosition(1);
-        }
-        else if (outtakeIn == true) {
-            outtakeServo1.setPosition(0);
-            outtakeServo2.setPosition(0);
-        }
-        else {
-            outtakeServo1.setPosition(.5);
-            outtakeServo2.setPosition(.5);
-        }
-
-        if (elevatorUp == true) {
-            elevatorDrive.setVelocity(1200);
-        }
-        else if (elevatorDown == true) {
-            elevatorDrive.setVelocity(-1200);
-        }
-        else{
-            elevatorDrive.setVelocity(0);
-        }
+//        if (outtakeOut== true) {
+//            outtakeServo1.setPosition(1);
+//            outtakeServo2.setPosition(1);
+//        }
+//        else if (outtakeIn == true) {
+//            outtakeServo1.setPosition(0);
+//            outtakeServo2.setPosition(0);
+//        }
+//        else {
+//            outtakeServo1.setPosition(.5);
+//            outtakeServo2.setPosition(.5);
+//        }
+//
+//        if (elevatorUp == true) {
+//            elevatorDrive.setVelocity(1200);
+//        }
+//        else if (elevatorDown == true) {
+//            elevatorDrive.setVelocity(-1200);
+//        }
+//        else{
+//            elevatorDrive.setVelocity(0);
+//        }
 
 
         // Show the elapsed game time and wheel power.
@@ -282,14 +325,14 @@ public class TestbotTeleop extends OpMode
         telemetry.addData("Motors", "right front (%.2f)", rightFrontDrive.getVelocity());
         telemetry.addData("Motors", "left back (%.2f)", leftBackDrive.getVelocity());
         telemetry.addData("Motors", "right back (%.2f)", rightBackDrive.getVelocity());
-        telemetry.addData("Motors", "intake speed (%.2f)", intakeDrive.getVelocity());
-        telemetry.addData("Boolean", "intake in(%b)", intakeIn);
-        telemetry.addData("Boolean", "intake out(%b)", intakeOut);
+//        telemetry.addData("Motors", "intake speed (%.2f)", intakeDrive.getVelocity());
+//        telemetry.addData("Boolean", "intake in(%b)", intakeIn);
+//        telemetry.addData("Boolean", "intake out(%b)", intakeOut);
         telemetry.addData("Boolean", "carousel(%b)", carouselClockWise);
         telemetry.addData("boolean", "carousel(%b", carouselCounterClock);
-        telemetry.addData("boolean", "outtake(%b)", outtakeIn);
-        telemetry.addData("Boolean", "outtake(%b)", outtakeOut);
-        telemetry.addData("Motors", "elevator(%.2f)", elevatorDrive.getVelocity());
+//        telemetry.addData("boolean", "outtake(%b)", outtakeIn);
+//        telemetry.addData("Boolean", "outtake(%b)", outtakeOut);
+//        telemetry.addData("Motors", "elevator(%.2f)", elevatorDrive.getVelocity());
     }
 
     /*
