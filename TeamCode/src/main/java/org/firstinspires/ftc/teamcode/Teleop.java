@@ -112,10 +112,10 @@ public class Teleop extends OpMode
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        rightBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotorEx.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
-        leftFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotorEx.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        leftFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
 //        intakeDrive.setDirection(DcMotorEx.Direction.FORWARD);
 //        carouselMotor.setDirection(DcMotorEx.Direction.FORWARD);
 //        outtakeServo1.setDirection(Servo.Direction.FORWARD);
@@ -185,7 +185,7 @@ public class Teleop extends OpMode
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
         double strafe = gamepad1.left_stick_x;
-        double drive = -gamepad1.left_stick_y;
+        double drive = gamepad1.left_stick_y;
         double turn  =  gamepad1.right_stick_x;
 //        double intakeIn = gamepad1.left_trigger;
 //        double intakeOut = gamepad1.right_trigger;
