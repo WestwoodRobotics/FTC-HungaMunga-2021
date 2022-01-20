@@ -57,7 +57,7 @@ import java.util.HashMap;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Basic: testAutomSpeeds", group="Linear Opmode")
+//@Autonomous(name="Basic: testAutomSpeeds", group="Linear Opmode")
 public class testingMotorSpeeds extends LinearOpMode {
 
     // Declare OpMode members.

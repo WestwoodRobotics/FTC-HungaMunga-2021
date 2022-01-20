@@ -22,7 +22,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "AutonomousDuckFinderOneCamera", group = "Linear Opmode")
+//@Autonomous(name = "AutonomousDuckFinderOneCamera", group = "Linear Opmode")
 public class AutonomousDuckFinderOneCamera extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private double globalMovementTimer = 0;

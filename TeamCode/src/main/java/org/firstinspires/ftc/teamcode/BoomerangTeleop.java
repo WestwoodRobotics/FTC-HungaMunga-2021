@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 
-@TeleOp(name="BoomerangTeleOp")
+//@TeleOp(name="BoomerangTeleOp")
 public class BoomerangTeleop extends OpMode
 {
     // Declare OpMode members.

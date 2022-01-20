@@ -52,7 +52,7 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Basic: testingTimeBasedVelocity", group="Linear Opmode")
+//@Autonomous(name="Basic: testingTimeBasedVelocity", group="Linear Opmode")
 public class testingTimeBasedVelocity extends LinearOpMode {
 
     // Declare OpMode members.

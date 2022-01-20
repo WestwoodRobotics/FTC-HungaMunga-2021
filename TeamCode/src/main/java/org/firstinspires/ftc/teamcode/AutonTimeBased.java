@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Anaya: AutonTimeBased", group="Linear Opmode")
+//@Autonomous(name="Anaya: AutonTimeBased", group="Linear Opmode")
 public class AutonTimeBased extends LinearOpMode{
 
     private ElapsedTime runtime = new ElapsedTime();

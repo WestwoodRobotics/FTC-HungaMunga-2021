@@ -22,7 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  *
  * @see <a href="http://revrobotics.com">REV Robotics Web Page</a>
  */
-@TeleOp(name = "TestingElevatorDistances", group = "Iterative Opmode")
+//@TeleOp(name = "TestingElevatorDistances", group = "Iterative Opmode")
 public class EstablishElavatorDistances extends LinearOpMode {
 
     private DistanceSensor elevatorSensor;

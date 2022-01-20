@@ -66,6 +66,7 @@ public class Teleop extends OpMode
     private DcMotorEx rightBackDrive = null;
 //    private DcMotorEx intakeDrive = null;
     private Servo carousel1 = null;
+    private Servo carouselRed = null;
 //    private Servo outtakeServo1 = null;
 //    private Servo outtakeServo2 = null;
 //    private DcMotorEx tunnelDrive =  null;
@@ -103,6 +104,7 @@ public class Teleop extends OpMode
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back");
 //        intakeDrive = hardwareMap.get(DcMotorEx.class, "intake");
         carousel1 = hardwareMap.get(Servo.class, "carousel1");
+        carouselRed = hardwareMap.get(Servo.class, "carouselRed");
 //        outtakeServo1 = hardwareMap.get(Servo.class, "outtake1");
 //        outtakeServo2 = hardwareMap.get(Servo.class, "outtake2");
         //tunnelDrive = hardwareMap.get(DcMotorEx.class, "tunnel");
@@ -191,8 +193,8 @@ public class Teleop extends OpMode
 //        double intakeOut = gamepad1.right_trigger;
 //        double intakeIn = gamepad1.right_trigger;
 //        double intakeOut = gamepad1.left_trigger;
-        boolean carouselCounterClock = gamepad1.a;
-        boolean carouselClockWise = gamepad1.y;
+        boolean redCarousel = gamepad1.a;
+        boolean blueCarousel = gamepad1.y;
         boolean sfModeCurrent = gamepad1.b;
 //        boolean outtakeIn = gamepad1.left_bumper;
 //        boolean outtakeOut = gamepad1.right_bumper;
@@ -284,14 +286,17 @@ public class Teleop extends OpMode
 
 
         //carousel clockwise and counter clockwise spin when the corresponding button is pressed
-        if (carouselCounterClock == true) {
+        if (redCarousel == true) {
+            carouselRed.setPosition(1);
             carousel1.setPosition(1);
         }
-        else if (carouselClockWise == true) {
+        else if (blueCarousel == true) {
             carousel1.setPosition(0);
+            carouselRed.setPosition(0);
         }
         else {
             carousel1.setPosition(.5);
+            carouselRed.setPosition(.5);
         }
 
         //outtake in and out when the corresponding button is pressed.
@@ -328,8 +333,8 @@ public class Teleop extends OpMode
 //        telemetry.addData("Motors", "intake speed (%.2f)", intakeDrive.getVelocity());
 //        telemetry.addData("Boolean", "intake in(%b)", intakeIn);
 //        telemetry.addData("Boolean", "intake out(%b)", intakeOut);
-        telemetry.addData("Boolean", "carousel(%b)", carouselClockWise);
-        telemetry.addData("boolean", "carousel(%b", carouselCounterClock);
+        telemetry.addData("Boolean", "carousel(%b)", blueCarousel);
+        telemetry.addData("boolean", "carousel(%b", carouselRed);
 //        telemetry.addData("boolean", "outtake(%b)", outtakeIn);
 //        telemetry.addData("Boolean", "outtake(%b)", outtakeOut);
 //        telemetry.addData("Motors", "elevator(%.2f)", elevatorDrive.getVelocity());

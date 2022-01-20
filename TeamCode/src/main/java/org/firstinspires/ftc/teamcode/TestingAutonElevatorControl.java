@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.HashMap;
 
-@Autonomous(name="TestingAutonElevatorControl", group="Linear Opmode")
+//@Autonomous(name="TestingAutonElevatorControl", group="Linear Opmode")
 public class TestingAutonElevatorControl extends LinearOpMode {
 
     // Declare OpMode members.

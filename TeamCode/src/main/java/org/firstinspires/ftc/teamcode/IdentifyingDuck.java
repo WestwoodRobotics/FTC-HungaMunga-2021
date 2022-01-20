@@ -52,7 +52,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "IdentifyingDuckWithServos", group = "Linear Opmode")
+//@Autonomous(name = "IdentifyingDuckWithServos", group = "Linear Opmode")
 public class IdentifyingDuck extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private Servo testServo = null;

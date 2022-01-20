@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-@Autonomous(name = "AutonomousDuckFinderTwoCameras", group = "Linear Opmode")
+//@Autonomous(name = "AutonomousDuckFinderTwoCameras", group = "Linear Opmode")
 public class AutonomousDuckFinderTwoCameras extends LinearOpMode{
     private ElapsedTime runtime = new ElapsedTime();
     private double globalMovementTimer = 0;
