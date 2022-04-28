@@ -35,6 +35,18 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -69,11 +81,11 @@ public class AttleAttleTeleop extends OpMode
     private DcMotorEx carousel = null;
     private DcMotorEx intake = null;
     private DcMotorEx outtakeLift = null;
-  //  private Servo box = null;
+    private Servo box = null;
 
-   // public final static double box_home = 0.0;
-    //public final static double box_min_range = 0.0;
-    //public final static double box_max_range = 1.0;
+    public final static double box_home = 0.0;
+    public final static double box_min_range = 0.0;
+    public final static double box_max_range = 1.0;
 
 
 
@@ -94,7 +106,8 @@ public class AttleAttleTeleop extends OpMode
         carousel  = hardwareMap.get(DcMotorEx.class, "carousel");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         outtakeLift = hardwareMap.get(DcMotorEx.class, "outtakelift");
-      //  box = hardwareMap.get(Servo.class, "box");
+        box = hardwareMap.get(Servo.class, "box");
+
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
 
@@ -102,11 +115,17 @@ public class AttleAttleTeleop extends OpMode
 
         leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        leftFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        leftFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
         carousel.setDirection(DcMotorEx.Direction.FORWARD);
         intake.setDirection(DcMotorEx.Direction.FORWARD);
         outtakeLift.setDirection(DcMotorEx.Direction.FORWARD);
-     //   box.setPosition(box_home);
+        box.setPosition(box_home);
+
+        outtakeLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        outtakeLift.setMode(DcMotor.RunMode.RESET_ENCODERS);
+        outtakeLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        outtakeLift.setTargetPosition(20000);
+
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -158,55 +177,66 @@ public class AttleAttleTeleop extends OpMode
         double carouselPower;
         double intakePower;
         double outtakeLiftPower;
-      //  double boxPower;
+
+
 
         // POV Mode uses left stick to go forward, and right stick to turn.
         // - This uses basic math to combine motions and is easier to drive straight.
         double strafe = gamepad1.left_stick_x;
         double drive = gamepad1.left_stick_y;
         double turn  =  gamepad1.right_stick_x;
-        boolean carouselMove = gamepad2.right_bumper;
+        boolean carouselMoveRight = gamepad1.right_bumper;
+        boolean carouselMoveLeft = gamepad1.left_bumper;
         float intakeMoveIn = gamepad2.right_trigger;
         float intakeMoveOut = gamepad2.left_trigger;
         boolean outtakeLiftMoveUp = gamepad2.dpad_up;
         boolean outtakeLiftMoveDown = gamepad2.dpad_down;
-      //  boolean boxMove = gamepad2.circle;
+        boolean boxMoveHome = gamepad2.dpad_left;
+        boolean boxMoveOut = gamepad2.dpad_right;
 
         leftFrontPower   = -drive + strafe + turn;
         leftBackPower    = drive + strafe - turn;
         rightFrontPower  = -drive - strafe - turn;
         rightBackPower   = -drive + strafe - turn;
+
         if (intakeMoveIn > 0){
-            intakePower = 1;
+            intakePower = .75;
         }
         else if(intakeMoveOut > 0){
-            intakePower = -1;
+            intakePower = -.75;
         }
         else{
             intakePower = 0;
         }
 
 
-        if(carouselMove) {
-            carouselPower = 0.7;
+        if(carouselMoveRight) {
+            carouselPower = 0.8;
         }
-        else {
+        else if (carouselMoveLeft){
+            carouselPower = -0.8;
+        }
+        else{
             carouselPower = 0;
         }
-        if(gamepad2.left_bumper) {
+        if(carouselMoveLeft) {
             carouselPower = -0.8;
         }
 
-     /*   if(boxMove) {
-            boxPower = 1.0;
-
-        }*/
+        if(boxMoveHome) {
+            box.setPosition(box_home);
+        }
+        if (boxMoveOut){
+            box.setPosition(box_max_range);
+        }
 
         if(outtakeLiftMoveUp) {
-            outtakeLiftPower = 0.8;
+            outtakeLift.setTargetPosition(200);
+            outtakeLift.setPower(.5);
         }
         else if(outtakeLiftMoveDown) {
-            outtakeLiftPower = -0.7;
+            outtakeLift.setTargetPosition(-800);
+            outtakeLift.setPower(-.5);
         }
         else{
             outtakeLiftPower = 0;
@@ -240,10 +270,9 @@ public class AttleAttleTeleop extends OpMode
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
         carousel.setPower(carouselPower);
+
         intake.setPower(intakePower);
-        outtakeLift.setPower(outtakeLiftPower);
         intake.setPower(intakePower);
-        outtakeLift.setPower(outtakeLiftPower);
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         //telemetry.addData("Motors", "left front (%.2f), right front (%.2f), left back (%.2f), right back (%.2f)", leftFrontDrive.getPower(), rightFrontDrive.getPower(), leftBackDrive.getPower(), rightBackDrive.getPower());
@@ -255,3 +284,4 @@ public class AttleAttleTeleop extends OpMode
     }
 //
 }
+

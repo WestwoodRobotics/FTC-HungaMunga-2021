@@ -22,7 +22,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-//@Autonomous(name = "AutonomousDuckFinderOneCamera", group = "Linear Opmode")
+@Autonomous(name = "AutonomousDuckFinderOneCamera", group = "Linear Opmode")
 public class AutonomousDuckFinderOneCamera extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private double globalMovementTimer = 0;
@@ -86,6 +86,19 @@ public class AutonomousDuckFinderOneCamera extends LinearOpMode {
     public List<Recognition> findDuck(int tries) {
         List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
         int foundDucky = foundDuck(updatedRecognitions);
+        int i = 0;
+        if (updatedRecognitions != null) {
+            for (Recognition recognition : updatedRecognitions) {
+                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                        recognition.getLeft(), recognition.getTop());
+                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                        recognition.getRight(), recognition.getBottom());
+                i++;
+            }
+        }
+        telemetry.update();
+        sleep(3000);
         if (foundDucky != 0) {
             return updatedRecognitions;
         }
@@ -119,9 +132,9 @@ public class AutonomousDuckFinderOneCamera extends LinearOpMode {
         initVuforia();
         initTfod();
 
-        leftFrontDrive  = hardwareMap.get(DcMotorEx.class, "left_front");
-        leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back");
-        rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back");
+        leftFrontDrive  = hardwareMap.get(DcMotorEx.class, "left_Front_drive");
+        leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_Back_drive");
+        rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_Back_drive");
 
         rightBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
@@ -176,35 +189,37 @@ public class AutonomousDuckFinderOneCamera extends LinearOpMode {
 
 
         int i = 0;
-        for (Recognition recognition : updatedRecognitions) {
-            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                    recognition.getLeft(), recognition.getTop());
-            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                    recognition.getRight(), recognition.getBottom());
-            i++;
+        if (updatedRecognitions != null) {
+            for (Recognition recognition : updatedRecognitions) {
+                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                        recognition.getLeft(), recognition.getTop());
+                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                        recognition.getRight(), recognition.getBottom());
+                i++;
+            }
         }
         telemetry.update();
         sleep(3000);
 
         if (updatedRecognitions != null && duckIndex != 0) {
-            /* a variable storing the duck right position
-            with this we can just check fro left to right on the camera to know
-            on which section of the camera the ducky is in
-             */
+           /* a variable storing the duck right position
+           with this we can just check fro left to right on the camera to know
+           on which section of the camera the ducky is in
+            */
             float duckRight = updatedRecognitions.get(duckIndex-1).getRight();
 
 
-            /* example of what code does next
-            || = line1
-            | = line2
-             nothing1  ||  nothing2  | duck
-             the code has the right pos of the duck
-             meaning we first check if the right position is less than || position
-             then we check if the right position is less than | position
-             and lastly if it wasn't less than any of does two and it's position is
-             in the last part
-             */
+           /* example of what code does next
+           || = line1
+           | = line2
+            nothing1  ||  nothing2  | duck
+            the code has the right pos of the duck
+            meaning we first check if the right position is less than || position
+            then we check if the right position is less than | position
+            and lastly if it wasn't less than any of does two and it's position is
+            in the last part
+            */
             if (duckRight < line1) {
                 leftBackDrive.setVelocity(3500);
                 telemetry.addData("duckRight", duckRight);
@@ -260,5 +275,6 @@ public class AutonomousDuckFinderOneCamera extends LinearOpMode {
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
     }
 }
+
 
 

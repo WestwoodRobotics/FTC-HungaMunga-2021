@@ -53,7 +53,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Hunga Munga: Teleop", group="Iterative Opmode")
+@TeleOp(name="Hunga Munga: Teleop2controller", group="Iterative Opmode")
 
 public class Teleop extends OpMode
 
@@ -64,13 +64,15 @@ public class Teleop extends OpMode
     private DcMotorEx rightFrontDrive = null;
     private DcMotorEx leftBackDrive = null;
     private DcMotorEx rightBackDrive = null;
-//    private DcMotorEx intakeDrive = null;
+    private DcMotorEx intakeDrive = null;
+    private DcMotorEx outtakeDrive = null;
     private Servo carousel1 = null;
-    private Servo carouselRed = null;
-//    private Servo outtakeServo1 = null;
+    private Servo carousel2 = null;
+    //    private Servo outtakeServo1 = null;
 //    private Servo outtakeServo2 = null;
 //    private DcMotorEx tunnelDrive =  null;
-//    private DcMotorEx elevatorDrive = null;
+    private DcMotorEx elevatorDrive1 = null;
+    private DcMotorEx elevatorDrive2 = null;
     private int dpad_rightToggle = 0;
     private boolean dpadr_pressed = false;
     private int dpad_upToggle = 0;
@@ -82,6 +84,7 @@ public class Teleop extends OpMode
     private int lastSpeed = 0;
     private boolean sfModePast = false;
     private int sfModeCounter = 0;
+    private Servo outtakeServo;
 
 //    DcMotor tester = null;
 //    DcMotorEx.RunMode.RUN_TO_POSITION;
@@ -99,31 +102,38 @@ public class Teleop extends OpMode
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
         leftFrontDrive  = hardwareMap.get(DcMotorEx.class, "left_front");
-        rightFrontDrive = hardwareMap.get(DcMotorEx.class, "right_front");
-        leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back");
+        leftBackDrive = hardwareMap.get(DcMotorEx.class, "right_front");
+        rightFrontDrive  = hardwareMap.get(DcMotorEx.class, "left_back");
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back");
-//        intakeDrive = hardwareMap.get(DcMotorEx.class, "intake");
+        intakeDrive = hardwareMap.get(DcMotorEx.class, "intake");
+//        outtakeDrive = hardwareMap.get(DcMotorEx.class, "outtake");
         carousel1 = hardwareMap.get(Servo.class, "carousel1");
-        carouselRed = hardwareMap.get(Servo.class, "carouselRed");
+        carousel2 = hardwareMap.get(Servo.class, "carousel2");
 //        outtakeServo1 = hardwareMap.get(Servo.class, "outtake1");
 //        outtakeServo2 = hardwareMap.get(Servo.class, "outtake2");
         //tunnelDrive = hardwareMap.get(DcMotorEx.class, "tunnel");
-//        elevatorDrive = hardwareMap.get(DcMotorEx.class, "elevator");
+        elevatorDrive1 = hardwareMap.get(DcMotorEx.class, "elevator1");
+        elevatorDrive2 = hardwareMap.get(DcMotorEx.class, "elevator2");
+        outtakeServo = hardwareMap.get(Servo.class, "outtake");
+
 
 
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        rightBackDrive.setDirection(DcMotorEx.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
         leftFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
-//        intakeDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        intakeDrive.setDirection(DcMotorEx.Direction.FORWARD);
+//        outtakeDrive.setDirection(DcMotorEx.Direction.FORWARD);
 //        carouselMotor.setDirection(DcMotorEx.Direction.FORWARD);
 //        outtakeServo1.setDirection(Servo.Direction.FORWARD);
 //        outtakeServo2.setDirection(Servo.Direction.REVERSE);
         //tunnelDrive.setDirection(DcMotorEx.Direction.FORWARD);
-//        elevatorDrive.setDirection(DcMotorEx.Direction.REVERSE);
+        elevatorDrive1.setDirection(DcMotorEx.Direction.FORWARD);
+        elevatorDrive2.setDirection(DcMotorEx.Direction.FORWARD);
+        outtakeServo.setDirection(Servo.Direction.FORWARD);
 
 
         // Tell the driver that initialization is complete.
@@ -134,8 +144,10 @@ public class Teleop extends OpMode
         rightFrontDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-//        intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        elevatorDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        outtakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        elevatorDrive1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        elevatorDrive2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        carouselMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //tunnelDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -149,7 +161,9 @@ public class Teleop extends OpMode
         rightFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
-//        intakeDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        intakeDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+        outtakeServo.setPosition(0);
+//        outtakeDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
 //        carouselMotor.setVelocityPIDFCoefficients(15, 0, 0, 0);
         //tunnelDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
     }
@@ -189,23 +203,27 @@ public class Teleop extends OpMode
         double strafe = gamepad1.left_stick_x;
         double drive = gamepad1.left_stick_y;
         double turn  =  gamepad1.right_stick_x;
-//        double intakeIn = gamepad1.left_trigger;
-//        double intakeOut = gamepad1.right_trigger;
-//        double intakeIn = gamepad1.right_trigger;
-//        double intakeOut = gamepad1.left_trigger;
-        boolean redCarousel = gamepad1.a;
-        boolean blueCarousel = gamepad1.y;
+        double intakeIn = gamepad1.right_trigger;
+        double intakeIn2 = gamepad2.right_trigger;
+        double intakeOut = gamepad1.left_trigger;
+        double intakeOut2 = gamepad1.left_trigger;
+        boolean carouselCounterClock = gamepad1.a;
+        boolean carouselCounterCLock2 = gamepad2.a;
+        boolean carouselClockWise = gamepad1.y;
+        boolean carouselClockWise2 = gamepad2.y;
         boolean sfModeCurrent = gamepad1.b;
 //        boolean outtakeIn = gamepad1.left_bumper;
 //        boolean outtakeOut = gamepad1.right_bumper;
-//        boolean elevatorUp = gamepad1.dpad_up;
-//        boolean elevatorDown = gamepad1.dpad_down;
+        boolean elevatorUp = gamepad1.dpad_up;
+        boolean elevatorDown = gamepad1.dpad_down;
+        boolean outtakeOut = gamepad1.dpad_left;
+        boolean outtakeIn = gamepad1.dpad_right;
 
 //        Correct equations:
-        leftFrontPower   = drive + strafe + turn;
-        rightFrontPower  = drive - strafe - turn;
-        leftBackPower    = drive - strafe + turn;
-        rightBackPower   = drive + strafe - turn;
+        leftFrontPower   = drive - strafe - turn;
+        rightFrontPower  = drive + strafe + turn;
+        leftBackPower    = drive + strafe - turn;
+        rightBackPower   = drive - strafe + turn;
 
 //        leftFrontPower   = -drive - strafe - turn;
 //        rightFrontPower  = -drive - strafe + turn;
@@ -232,18 +250,28 @@ public class Teleop extends OpMode
             }
         }
 
-        if (sfModeCounter == 2) {
-            leftFrontDrive.setVelocity(leftFrontPower * 1000);
-            rightBackDrive.setVelocity(rightBackPower * 1000);
-            leftBackDrive.setVelocity(leftBackPower * 1000);
-            rightFrontDrive.setVelocity(rightFrontPower * 1000);
+        if (outtakeOut) {
+            outtakeServo.setPosition(1);
+        }
+        else if (outtakeIn) {
+            outtakeServo.setPosition(0);
         }
         else {
-            leftFrontDrive.setVelocity(leftFrontPower * 3000);
-            rightBackDrive.setVelocity(rightBackPower * 3000);
-            leftBackDrive.setVelocity(leftBackPower * 3000);
-            rightFrontDrive.setVelocity(rightFrontPower * 3000);
+            outtakeServo.setPosition(0);
         }
+
+//        if (sfModeCounter == 2) {
+//            leftFrontDrive.setVelocity(leftFrontPower * 1000);
+//            rightBackDrive.setVelocity(rightBackPower * 1000);
+//            leftBackDrive.setVelocity(leftBackPower * 1000);
+//            rightFrontDrive.setVelocity(rightFrontPower * 1000);
+//        }
+//        else {
+        leftFrontDrive.setVelocity(leftFrontPower * 3000);
+        rightBackDrive.setVelocity(rightBackPower * 3000);
+        leftBackDrive.setVelocity(leftBackPower * 3000);
+        rightFrontDrive.setVelocity(rightFrontPower * 3000);
+//        }
 //        if (intakeIn > 0) {
 //            //intakeDrive.setVelocity(intakeIn * 1000);
 //            intakeDrive.setPower(intakeIn);
@@ -271,57 +299,63 @@ public class Teleop extends OpMode
 //        rightFrontDrive.setVelocity(rightFrontPower * 3000);
 
         // intake objects in and out when the corresponding trigger is pressed
-//        if (intakeIn > 0) {
-//            intakeDrive.setVelocity(intakeIn * -4000);
-//            //tunnelDrive.setVelocity(intakeIn * -4000);
-//            //intakeDrive.setPower(intakeIn);
-//        }
-//        else if (intakeOut > 0){
-//            intakeDrive.setVelocity(intakeOut * 4000);
-//            //intakeDrive.setPower(-intakeOut);
-//        }
-//        else {
-//            intakeDrive.setPower(0);
-//        }
+        if (intakeIn > 0 || intakeIn2 > 0) {
+//            outtakeDrive.setPower(intakeIn);
+            //tunnelDrive.setVelocity(intakeIn * -4000);
+            intakeDrive.setPower(intakeIn);
+        }
+        else if (intakeOut > 0  || intakeOut2 > 0){
+            //outtakeDrive.setVelocity(intakeIn * 4000);
+//            outtakeDrive.setPower(-intakeOut);
+            intakeDrive.setPower(-intakeOut);
+        }
+        else {
+            intakeDrive.setPower(0);
+//            outtakeDrive.setPower(0);
+
+        }
 
 
         //carousel clockwise and counter clockwise spin when the corresponding button is pressed
-        if (redCarousel == true) {
-            carouselRed.setPosition(1);
+        if (carouselCounterClock == true || carouselCounterCLock2 == true) {
             carousel1.setPosition(1);
+            carousel2.setPosition(1);
         }
-        else if (blueCarousel == true) {
+        else if (carouselClockWise == true || carouselClockWise2 == true) {
             carousel1.setPosition(0);
-            carouselRed.setPosition(0);
+            carousel2.setPosition(0);
         }
         else {
             carousel1.setPosition(.5);
-            carouselRed.setPosition(.5);
+            carousel2.setPosition(.5);
         }
 
         //outtake in and out when the corresponding button is pressed.
 //        if (outtakeOut== true) {
-//            outtakeServo1.setPosition(1);
-//            outtakeServo2.setPosition(1);
+//            outtakeDrive.setVelocity(1);
+//
 //        }
 //        else if (outtakeIn == true) {
-//            outtakeServo1.setPosition(0);
-//            outtakeServo2.setPosition(0);
+//            outtakeDrive.setPosition(0);
+//
 //        }
 //        else {
-//            outtakeServo1.setPosition(.5);
-//            outtakeServo2.setPosition(.5);
+//            outtakeDrive.setPosition(.5);
+//
 //        }
 //
-//        if (elevatorUp == true) {
-//            elevatorDrive.setVelocity(1200);
-//        }
-//        else if (elevatorDown == true) {
-//            elevatorDrive.setVelocity(-1200);
-//        }
-//        else{
-//            elevatorDrive.setVelocity(0);
-//        }
+        if (elevatorUp == true) {
+            elevatorDrive1.setVelocity(1200);
+            elevatorDrive2.setVelocity(1200);
+        }
+        else if (elevatorDown == true) {
+            elevatorDrive1.setVelocity(-1200);
+            elevatorDrive2.setVelocity(-1200);
+        }
+        else{
+            elevatorDrive1.setVelocity(0);
+            elevatorDrive2.setVelocity(0);
+        }
 
 
         // Show the elapsed game time and wheel power.
@@ -333,10 +367,10 @@ public class Teleop extends OpMode
 //        telemetry.addData("Motors", "intake speed (%.2f)", intakeDrive.getVelocity());
 //        telemetry.addData("Boolean", "intake in(%b)", intakeIn);
 //        telemetry.addData("Boolean", "intake out(%b)", intakeOut);
-        telemetry.addData("Boolean", "carousel(%b)", blueCarousel);
-        telemetry.addData("boolean", "carousel(%b", carouselRed);
-//        telemetry.addData("boolean", "outtake(%b)", outtakeIn);
-//        telemetry.addData("Boolean", "outtake(%b)", outtakeOut);
+        telemetry.addData("Boolean", "carousel(%b)", carouselClockWise);
+        telemetry.addData("boolean", "carousel(%b", carouselCounterClock);
+        telemetry.addData("boolean", "outtake(%b)", outtakeIn);
+        telemetry.addData("Boolean", "outtake(%b)", outtakeOut);
 //        telemetry.addData("Motors", "elevator(%.2f)", elevatorDrive.getVelocity());
     }
 
@@ -348,3 +382,4 @@ public class Teleop extends OpMode
     }
 
 }
+

@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 
-//@TeleOp(name="BoomerangTeleOp")
+@TeleOp(name="BoomerangTeleOp")
 public class BoomerangTeleop extends OpMode
 {
     // Declare OpMode members.
@@ -21,7 +21,7 @@ public class BoomerangTeleop extends OpMode
     private DcMotorEx rightFrontDrive = null;
     private DcMotorEx leftBackDrive = null;
     private DcMotorEx rightBackDrive = null;
-    private DcMotor carousel = null;
+    private DcMotorEx carousel = null;
     private DcMotor intake = null;
 
     private double leftFrontPower;
@@ -49,21 +49,21 @@ public class BoomerangTeleop extends OpMode
         rightFrontDrive = hardwareMap.get(DcMotorEx.class, "right_Front_drive");
         leftBackDrive = hardwareMap.get(DcMotorEx.class, "left_Back_drive" );
         rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_Back_drive");
-        carousel = hardwareMap.get(DcMotor.class, "carousel");
+        carousel = hardwareMap.get(DcMotorEx.class, "carousel");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs when connected directly to the battery
-        leftFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotorEx.Direction.REVERSE);
-        rightBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        carousel.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotorEx.Direction.REVERSE);
+        carousel.setDirection(DcMotorEx.Direction.FORWARD);
 
-        carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        carousel.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        leftFrontDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         leftFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         rightFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
@@ -115,9 +115,9 @@ public class BoomerangTeleop extends OpMode
         carouselPower = 0;
 
         if (gamepad1.dpad_right) {
-            carouselPower = 1;
+            carouselPower = 500;
         } else if (gamepad1.dpad_left) {
-            carouselPower = -1;
+            carouselPower = 500;
         } else {
             carouselPower = 0;
         }
@@ -169,7 +169,7 @@ public class BoomerangTeleop extends OpMode
             rightFrontDrive.setVelocity(rightFrontPower * 3000);
 
 
-            carousel.setPower(carouselPower);
+            carousel.setVelocity(carouselPower);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());

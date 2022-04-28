@@ -53,13 +53,14 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-//@TeleOp(name="Abraham: TestContinuousControlledSpin", group="Iterative Opmode")
+@TeleOp(name="Abraham: TestContinuousControlledSpin", group="Iterative Opmode")
 
 public class TestingContinuousControlledSpin extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotorEx testMotor  = null;
+    private DcMotorEx outtakelift  = null;
+    private double motorRotationTicks = 700;
 
 //    DcMotor tester = null;
 //    DcMotorEx.RunMode.RUN_TO_POSITION;
@@ -76,16 +77,16 @@ public class TestingContinuousControlledSpin extends OpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        testMotor  = hardwareMap.get(DcMotorEx.class, "right_front");
+        outtakelift  = hardwareMap.get(DcMotorEx.class, "outtakelift");
 
-        testMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outtakelift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        testMotor.setDirection(DcMotor.Direction.FORWARD);
+        outtakelift.setDirection(DcMotor.Direction.FORWARD);
 
         //Setting Zero Power behaviour
-        testMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        outtakelift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
     }
@@ -106,9 +107,9 @@ public class TestingContinuousControlledSpin extends OpMode
     }
 
     public void goToThatPos(int Position, double power) {
-        testMotor.setTargetPosition(Position);
-        testMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        testMotor.setPower(power);
+        outtakelift.setTargetPosition(Position);
+        outtakelift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        outtakelift.setPower(power);
     }
 
     /*
@@ -118,11 +119,11 @@ public class TestingContinuousControlledSpin extends OpMode
     public void loop() {
         double drive = gamepad1.left_stick_y;
 
-        goToThatPos((int)drive*100, drive);
+        goToThatPos(560, 1000);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "test motor: " + testMotor.getTargetPosition());
+        telemetry.addData("Motors", "test motor: " + outtakelift.getTargetPosition());
         telemetry.addData("joy stick y pos: (%,.6f)",  drive);
 
     }
