@@ -239,7 +239,6 @@ public class Teleop extends OpMode
             leftBackPower /= maxValue;
             rightBackPower /= maxValue;
         }
-
         if (sfModePast != sfModeCurrent) {
             sfModePast = sfModeCurrent;
             if ( sfModeCounter == 2) {
@@ -282,7 +281,7 @@ public class Teleop extends OpMode
 //        }
 //        else {
 //            intakeDrive.setPower(0);
-//        }
+//       //       }
 
 
 
