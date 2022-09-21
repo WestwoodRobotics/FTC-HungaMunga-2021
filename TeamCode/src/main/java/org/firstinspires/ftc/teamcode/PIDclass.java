@@ -9,12 +9,14 @@ public class PIDclass {
     private double velDiff;
     private int pidCounter;
     private int wins;
+    private double wantedVel;
 
     public PIDclass() {
 
     }
 
     public PIDclass(double pidVal, double[] velocities, double wantedVel) {
+        this.wantedVel = wantedVel;
         this.pidVal = pidVal;
         this.velocities = velocities;
         this.averageVelocity = calculateAverageVelocity(velocities);
@@ -31,6 +33,14 @@ public class PIDclass {
         }
         average = totalvelocity/velocities.length;
         return average;
+    }
+
+    public double getWantedVel() {
+        return wantedVel;
+    }
+
+    public double[] getVelocities() {
+        return velocities;
     }
 
     public double getPIDVal() {

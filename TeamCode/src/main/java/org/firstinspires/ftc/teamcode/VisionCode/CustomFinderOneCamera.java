@@ -1,24 +1,29 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.VisionCode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.SwitchableCamera;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-//@Autonomous(name = "AutonomousDuckFinderTwoCameras", group = "Linear Opmode")
-public class AutonomousDuckFinderTwoCameras extends LinearOpMode{
+/**
+ * This 2020-2021 OpMode illustrates the basics of using the TensorFlow Object Detection API to
+ * determine the position of the Freight Frenzy game elements.
+ *
+ * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
+ *
+ * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
+ * is explained below.
+ */
+@Autonomous(name = "CustomFinder", group = "Linear Opmode")
+public class CustomFinderOneCamera extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private double globalMovementTimer = 0;
     private double servoMovementDuration = 2;
@@ -26,6 +31,11 @@ public class AutonomousDuckFinderTwoCameras extends LinearOpMode{
     private DcMotorEx leftFrontDrive = null;
     private DcMotorEx leftBackDrive = null;
     private DcMotorEx rightBackDrive = null;
+    private int clipLeft = 280;
+    private int clipTop = 260;
+    private int clipRight = 260;
+    private int clipBottom = 155;
+
     /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains
      * the following 4 detectable objects
      *  0: Ball,
@@ -57,8 +67,13 @@ public class AutonomousDuckFinderTwoCameras extends LinearOpMode{
      * Once you've obtained a license key, copy the string from the Vuforia web site
      * and paste it in to your code on the next line, between the double quotes.
      */
+    // put your own key my key might be all used up by now
     private static final String VUFORIA_KEY =
-            " -- YOUR NEW VUFORIA KEY GOES HERE  --- ";
+            "Afl+RML/////AAABmaMhjqdoa0n5o+LOBUlDi2FnRR3PvjXoX9GXBYOqhEzqDK5EKlhfk7DF9xzcZYPAYSpcyiB" +
+                    "sR9g89nQniC//pOf07VI7X8ajr5AWIGShrW3kPrD1uIlLG7IXWGA6AdL2onK51Nebvu7Qqim+BPqJRa" +
+                    "gq70nEvg5DrPujktWjnuu8TA3Mm7V9Ir/XYNqhyrAxxfm/yVwUUvP6l3Km+T9qvu8ezX628BmdMXhM4" +
+                    "cEoEHn1paQ6if7ZyJg4c6EPpAh96SKfBLtQyb1Yk+dM+0jtXKeLPfOqfdVJ5fyckkN04f2oQtJcZE5R" +
+                    "VaVDeszXltcxNLyK1EpYCgXi5fmS+bpqPUziQtHyWQSf4uwqKlI5Eo/x";
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -67,21 +82,27 @@ public class AutonomousDuckFinderTwoCameras extends LinearOpMode{
     private VuforiaLocalizer vuforia;
 
     /**
-     * Variables used for switching cameras.
-     */
-    private WebcamName webcam1, webcam2;
-    private SwitchableCamera switchableCamera;
-
-
-    /**
      * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
      * Detection engine.
      */
     private TFObjectDetector tfod;
 
-    public List<Recognition> findDuck(List<Recognition> updatedRecognitions, int tries) {
-        updatedRecognitions = tfod.getUpdatedRecognitions();
+    public List<Recognition> findDuck(int tries) {
+        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
         int foundDucky = foundDuck(updatedRecognitions);
+        int i = 0;
+        if (updatedRecognitions != null) {
+            for (Recognition recognition : updatedRecognitions) {
+                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                        recognition.getLeft(), recognition.getTop());
+                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                        recognition.getRight(), recognition.getBottom());
+                i++;
+            }
+        }
+        telemetry.update();
+        sleep(3000);
         if (foundDucky != 0) {
             return updatedRecognitions;
         }
@@ -90,7 +111,7 @@ public class AutonomousDuckFinderTwoCameras extends LinearOpMode{
         }
         else {
 //            sleep(250);
-            return findDuck(updatedRecognitions, tries-1);
+            return findDuck(tries-1);
         }
     }
 
@@ -131,6 +152,9 @@ public class AutonomousDuckFinderTwoCameras extends LinearOpMode{
         leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
 
+        // clipping/ focusing on only one part of screen
+//        tfod.setClippingMargins(clipLeft, clipTop, clipRight, clipBottom);
+
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
          * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
@@ -144,7 +168,8 @@ public class AutonomousDuckFinderTwoCameras extends LinearOpMode{
             // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
             // should be set to the value of the images used to create the TensorFlow Object Detection model
             // (typically 16/9).
-            tfod.setZoom(2.5, 16.0/9.0);
+            tfod.setZoom(1, 16.0/9.0);
+            // 1 zoom mean you use the whole camera(play around with it to find a good zoom)
         }
 
         /** Wait for the game to begin */
@@ -153,76 +178,77 @@ public class AutonomousDuckFinderTwoCameras extends LinearOpMode{
         waitForStart();
         runtime.reset();
 
-        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+        List<Recognition> updatedRecognitions;
 
-        /*
-        where first using camera one which is going to  be looking at 2 possible ducky spots
-         */
-        // set zoom accordingly to only look at 2 spots
-        tfod.setZoom(2, 16.0/9.0);
-        // screen being split in two
-        float line1 = 640; // put pixel value
+
+
+        // screen being split in three
+        float line1 = 426; // put pixel value++
+        float line2 = 853; // put pixel value
         // image our screen has 30 pixel left to right, this is how it would be split
         // camera is 1280*720 pixels
 
-        boolean keepSearching = true;
-        updatedRecognitions = findDuck(updatedRecognitions, 10);
+        updatedRecognitions = findDuck(10);
         int duckIndex = foundDuck(updatedRecognitions);
         telemetry.addData("find duck?", duckIndex);
         telemetry.update();
         sleep(3000);
 
+
+        int i = 0;
+        if (updatedRecognitions != null) {
+            for (Recognition recognition : updatedRecognitions) {
+                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                        recognition.getLeft(), recognition.getTop());
+                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                        recognition.getRight(), recognition.getBottom());
+                i++;
+            }
+        }
+        telemetry.update();
+        sleep(3000);
+
         if (updatedRecognitions != null && duckIndex != 0) {
-            /* a variable storing the duck right position
-            with this we can just check fro left to right on the camera to know
-            on which section of the camera the ducky is in
+           /* a variable storing the duck right position
+           with this we can just check fro left to right on the camera to know
+           on which section of the camera the ducky is in
             */
-            float duckRight = updatedRecognitions.get(duckIndex).getRight();
+            float duckRight = updatedRecognitions.get(duckIndex-1).getRight();
 
 
-            /* example of what code does next
-            || = line1
-             marker1  ||  marker2
-             the code first checks if it even found a ducky in what the camera is looking at
-             if it did then it first checks wether the ducks right spot is behind line1,
-             else that mean it's on the other side
-
+           /* example of what code does next
+           || = line1
+           | = line2
+            nothing1  ||  nothing2  | duck
+            the code has the right pos of the duck
+            meaning we first check if the right position is less than || position
+            then we check if the right position is less than | position
+            and lastly if it wasn't less than any of does two and it's position is
+            in the last part
             */
             if (duckRight < line1) {
                 leftBackDrive.setVelocity(3500);
-                keepSearching = false;
+                telemetry.addData("duckRight", duckRight);
+                telemetry.update();
                 // sleep does in milliseconds - 1 second = 1000 seconds
-                sleep(1000);
-            } else {
-                rightBackDrive.setVelocity(3500);
-                keepSearching = false;
-                sleep(1000);
+                sleep(3000);
             }
-        }
-
-        if (keepSearching) {
-            /*
-            where next using camera two which is going to  be looking at 1 possible ducky spot
-             */
-            this.doCameraSwitching();
-
-            // set zoom accordingly to only look at 1 spots
-            tfod.setZoom(2.7, 16.0 / 9.0);
-            // the screen won't be split this time
-
-            updatedRecognitions = findDuck(updatedRecognitions, 10);
-            duckIndex = foundDuck(updatedRecognitions);
-            telemetry.addData("find duck?", duckIndex);
-            telemetry.update();
-            sleep(3000);
-
-            if (duckIndex != 0) {
+            else if (duckRight < line2) {
                 leftFrontDrive.setVelocity(3500);
-                sleep(1000);
+                telemetry.addData("duckRight", duckRight);
+                telemetry.update();
+                sleep(3000);
+            }
+            else {
+                rightBackDrive.setVelocity(3500);
+                telemetry.addData("duckRight", duckRight);
+                telemetry.update();
+                sleep(3000);
             }
         }
-    }
 
+    }
 
     /**
      * Initialize the Vuforia localization engine.
@@ -234,18 +260,10 @@ public class AutonomousDuckFinderTwoCameras extends LinearOpMode{
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-
-        // Indicate that we wish to be able to switch cameras.
-        webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
-        webcam2 = hardwareMap.get(WebcamName.class, "Webcam 2");
-        parameters.cameraName = ClassFactory.getInstance().getCameraManager().nameForSwitchableCamera(webcam1, webcam2);
+        parameters.cameraDirection = CameraDirection.BACK;
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        // Set the active camera to Webcam 1.
-        switchableCamera = (SwitchableCamera) vuforia.getCamera();
-        switchableCamera.setActiveCamera(webcam1);
 
         // Loading trackables is not necessary for the TensorFlow Object Detection engine.
     }
@@ -257,19 +275,13 @@ public class AutonomousDuckFinderTwoCameras extends LinearOpMode{
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.8f;
+        tfodParameters.minResultConfidence = 0.3f;
         tfodParameters.isModelTensorFlow2 = true;
         tfodParameters.inputSize = 320;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
     }
-
-    private void doCameraSwitching() {
-        if (switchableCamera.getActiveCamera() == webcam1) {
-            switchableCamera.setActiveCamera(webcam2);
-        }
-        else {
-            switchableCamera.setActiveCamera(webcam1);
-        }
-    }
 }
+
+
+

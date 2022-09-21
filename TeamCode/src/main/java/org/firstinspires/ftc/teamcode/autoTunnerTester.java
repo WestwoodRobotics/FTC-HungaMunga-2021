@@ -312,7 +312,6 @@ public class autoTunnerTester extends OpMode
                 aboutToEnterStage2 = true;
             }
             timesRan += 1;
-            telemetry.addData("timesRan", timesRan);
         }
         else if (currentStage == 2){
             int bestPIDpIndex = findIndexOfBestPIDp();
@@ -381,8 +380,9 @@ public class autoTunnerTester extends OpMode
         telemetry.addData("aboutToEnterStage2", aboutToEnterStage2);
         telemetry.addData("pidListSize", PIDpVals.size());
         for (int i = 0; i < PIDpVals.size(); i++) {
-            telemetry.addData("pidpVal", PIDpVals.get(i));
+            telemetry.addData("pidpVal: ", PIDpVals.get(i));
         }
+        telemetry.addData("timesRan", timesRan);
     }
 
     /*

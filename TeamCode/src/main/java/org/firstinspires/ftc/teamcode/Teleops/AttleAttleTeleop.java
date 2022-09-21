@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Teleops;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -112,7 +112,6 @@ public class AttleAttleTeleop extends OpMode
         // Reverse the motor that runs backwards when connected directly to the battery
 
         rightBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
-
         leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
         leftFrontDrive.setDirection(DcMotorEx.Direction.REVERSE);
@@ -121,10 +120,10 @@ public class AttleAttleTeleop extends OpMode
         outtakeLift.setDirection(DcMotorEx.Direction.FORWARD);
         box.setPosition(box_home);
 
-        outtakeLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        outtakeLift.setMode(DcMotor.RunMode.RESET_ENCODERS);
-        outtakeLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        outtakeLift.setTargetPosition(20000);
+//        outtakeLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        outtakeLift.setMode(DcMotor.RunMode.RESET_ENCODERS);
+//        outtakeLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        outtakeLift.setTargetPosition(20000);
 
 
         // Tell the driver that initialization is complete.
@@ -227,19 +226,19 @@ public class AttleAttleTeleop extends OpMode
             box.setPosition(box_home);
         }
         if (boxMoveOut){
-            box.setPosition(box_max_range);
+            box.setPosition(90);
         }
 
         if(outtakeLiftMoveUp) {
-            outtakeLift.setTargetPosition(200);
+            //outtakeLift.setTargetPosition(200);
             outtakeLift.setPower(.5);
         }
         else if(outtakeLiftMoveDown) {
-            outtakeLift.setTargetPosition(-800);
+            //outtakeLift.setTargetPosition(-800);
             outtakeLift.setPower(-.5);
         }
         else{
-            outtakeLiftPower = 0;
+            outtakeLift.setPower(0);
         }
 
 

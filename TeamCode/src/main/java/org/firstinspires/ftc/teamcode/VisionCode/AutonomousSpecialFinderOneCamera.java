@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.VisionCode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -22,8 +22,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "AutonomousDuckFinderOneCamera", group = "Linear Opmode")
-public class AutonomousDuckFinderOneCamera extends LinearOpMode {
+@Autonomous(name = "AutonomousSpecialFinderOneCamera", group = "Linear Opmode")
+public class AutonomousSpecialFinderOneCamera extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private double globalMovementTimer = 0;
     private double servoMovementDuration = 2;
@@ -31,6 +31,10 @@ public class AutonomousDuckFinderOneCamera extends LinearOpMode {
     private DcMotorEx leftFrontDrive = null;
     private DcMotorEx leftBackDrive = null;
     private DcMotorEx rightBackDrive = null;
+    private int clipLeft = 280;
+    private int clipTop = 260;
+    private int clipRight = 260;
+    private int clipBottom = 155;
 
     /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains
      * the following 4 detectable objects
@@ -43,12 +47,10 @@ public class AutonomousDuckFinderOneCamera extends LinearOpMode {
      *  FreightFrenzy_BC.tflite  0: Ball,  1: Cube
      *  FreightFrenzy_DM.tflite  0: Duck,  1: Marker
      */
-    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
+    private static final String TFOD_MODEL_ASSET = "PurpleGreen.tflite";
     private static final String[] LABELS = {
-            "Ball",
-            "Cube",
-            "Duck",
-            "Marker"
+            "Purple Box",
+            "Green Cap"
     };
 
     /*
@@ -83,47 +85,47 @@ public class AutonomousDuckFinderOneCamera extends LinearOpMode {
      */
     private TFObjectDetector tfod;
 
-    public List<Recognition> findDuck(int tries) {
-        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-        int foundDucky = foundDuck(updatedRecognitions);
-        int i = 0;
-        if (updatedRecognitions != null) {
-            for (Recognition recognition : updatedRecognitions) {
-                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                        recognition.getLeft(), recognition.getTop());
-                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                        recognition.getRight(), recognition.getBottom());
-                i++;
-            }
-        }
-        telemetry.update();
-        sleep(3000);
-        if (foundDucky != 0) {
-            return updatedRecognitions;
-        }
-        else if (tries <= 0) {
-            return null;
-        }
-        else {
-//            sleep(250);
-            return findDuck(tries-1);
-        }
-    }
-
-    public int foundDuck(List<Recognition> updatedRecognitions) {
-        int index = 0;
-        if (updatedRecognitions != null) {
-            for (Recognition recognition : updatedRecognitions) {
-                String currentLabel = recognition.getLabel();
-                if (currentLabel.equals("Duck")) {
-                    return index+1;
-                }
-                index += 1;
-            }
-        }
-        return 0;
-    }
+//    public List<Recognition> findDuck(int tries) {
+//        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+//        int foundDucky = foundDuck(updatedRecognitions);
+//        int i = 0;
+//        if (updatedRecognitions != null) {
+//            for (Recognition recognition : updatedRecognitions) {
+//                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+//                telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+//                        recognition.getLeft(), recognition.getTop());
+//                telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+//                        recognition.getRight(), recognition.getBottom());
+//                i++;
+//            }
+//        }
+//        telemetry.update();
+//        sleep(3000);
+//        if (foundDucky != 0) {
+//            return updatedRecognitions;
+//        }
+//        else if (tries <= 0) {
+//            return null;
+//        }
+//        else {
+////            sleep(250);
+//            return findDuck(tries-1);
+//        }
+//    }
+//
+//    public int foundDuck(List<Recognition> updatedRecognitions) {
+//        int index = 0;
+//        if (updatedRecognitions != null) {
+//            for (Recognition recognition : updatedRecognitions) {
+//                String currentLabel = recognition.getLabel();
+//                if (currentLabel.equals("Green capping")) {
+//                    return index+1;
+//                }
+//                index += 1;
+//            }
+//        }
+//        return 0;
+//    }
 
     @Override
     public void runOpMode() {
@@ -132,9 +134,9 @@ public class AutonomousDuckFinderOneCamera extends LinearOpMode {
         initVuforia();
         initTfod();
 
-        leftFrontDrive  = hardwareMap.get(DcMotorEx.class, "left_Front_drive");
-        leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_Back_drive");
-        rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_Back_drive");
+        leftFrontDrive  = hardwareMap.get(DcMotorEx.class, "left_front");
+        leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back");
+        rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back");
 
         rightBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
@@ -147,6 +149,9 @@ public class AutonomousDuckFinderOneCamera extends LinearOpMode {
         leftFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
         rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+
+        // clipping/ focusing on only one part of screen
+        tfod.setClippingMargins(clipLeft, clipTop, clipRight, clipBottom);
 
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
@@ -171,21 +176,21 @@ public class AutonomousDuckFinderOneCamera extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        List<Recognition> updatedRecognitions;
+        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
 
 
 
-        // screen being split in three
-        float line1 = 426; // put pixel value++
-        float line2 = 853; // put pixel value
-        // image our screen has 30 pixel left to right, this is how it would be split
-        // camera is 1280*720 pixels
-
-        updatedRecognitions = findDuck(10);
-        int duckIndex = foundDuck(updatedRecognitions);
-        telemetry.addData("find duck?", duckIndex);
-        telemetry.update();
-        sleep(3000);
+//        // screen being split in three
+//        float line1 = 426; // put pixel value++
+//        float line2 = 853; // put pixel value
+//        // image our screen has 30 pixel left to right, this is how it would be split
+//        // camera is 1280*720 pixels
+//
+//        updatedRecognitions = findDuck(10);
+//        int duckIndex = foundDuck(updatedRecognitions);
+//        telemetry.addData("find duck?", duckIndex);
+//        telemetry.update();
+//        sleep(3000);
 
 
         int i = 0;
@@ -202,44 +207,44 @@ public class AutonomousDuckFinderOneCamera extends LinearOpMode {
         telemetry.update();
         sleep(3000);
 
-        if (updatedRecognitions != null && duckIndex != 0) {
-           /* a variable storing the duck right position
-           with this we can just check fro left to right on the camera to know
-           on which section of the camera the ducky is in
-            */
-            float duckRight = updatedRecognitions.get(duckIndex-1).getRight();
-
-
-           /* example of what code does next
-           || = line1
-           | = line2
-            nothing1  ||  nothing2  | duck
-            the code has the right pos of the duck
-            meaning we first check if the right position is less than || position
-            then we check if the right position is less than | position
-            and lastly if it wasn't less than any of does two and it's position is
-            in the last part
-            */
-            if (duckRight < line1) {
-                leftBackDrive.setVelocity(3500);
-                telemetry.addData("duckRight", duckRight);
-                telemetry.update();
-                // sleep does in milliseconds - 1 second = 1000 seconds
-                sleep(3000);
-            }
-            else if (duckRight < line2) {
-                leftFrontDrive.setVelocity(3500);
-                telemetry.addData("duckRight", duckRight);
-                telemetry.update();
-                sleep(3000);
-            }
-            else {
-                rightBackDrive.setVelocity(3500);
-                telemetry.addData("duckRight", duckRight);
-                telemetry.update();
-                sleep(3000);
-            }
-        }
+//        if (updatedRecognitions != null && duckIndex != 0) {
+//           /* a variable storing the duck right position
+//           with this we can just check fro left to right on the camera to know
+//           on which section of the camera the ducky is in
+//            */
+//            float duckRight = updatedRecognitions.get(duckIndex-1).getRight();
+//
+//
+//           /* example of what code does next
+//           || = line1
+//           | = line2
+//            nothing1  ||  nothing2  | duck
+//            the code has the right pos of the duck
+//            meaning we first check if the right position is less than || position
+//            then we check if the right position is less than | position
+//            and lastly if it wasn't less than any of does two and it's position is
+//            in the last part
+//            */
+//            if (duckRight < line1) {
+//                leftBackDrive.setVelocity(3500);
+//                telemetry.addData("duckRight", duckRight);
+//                telemetry.update();
+//                // sleep does in milliseconds - 1 second = 1000 seconds
+//                sleep(3000);
+//            }
+//            else if (duckRight < line2) {
+//                leftFrontDrive.setVelocity(3500);
+//                telemetry.addData("duckRight", duckRight);
+//                telemetry.update();
+//                sleep(3000);
+//            }
+//            else {
+//                rightBackDrive.setVelocity(3500);
+//                telemetry.addData("duckRight", duckRight);
+//                telemetry.update();
+//                sleep(3000);
+//            }
+//        }
 
     }
 
