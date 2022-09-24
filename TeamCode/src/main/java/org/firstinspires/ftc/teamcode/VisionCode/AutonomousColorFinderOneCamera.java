@@ -88,11 +88,7 @@ public class AutonomousColorFinderOneCamera extends LinearOpMode {
      */
     // put your own key my key might be all used up by now
     private static final String VUFORIA_KEY =
-            "Afl+RML/////AAABmaMhjqdoa0n5o+LOBUlDi2FnRR3PvjXoX9GXBYOqhEzqDK5EKlhfk7DF9xzcZYPAYSpcyiB" +
-                    "sR9g89nQniC//pOf07VI7X8ajr5AWIGShrW3kPrD1uIlLG7IXWGA6AdL2onK51Nebvu7Qqim+BPqJRa" +
-                    "gq70nEvg5DrPujktWjnuu8TA3Mm7V9Ir/XYNqhyrAxxfm/yVwUUvP6l3Km+T9qvu8ezX628BmdMXhM4" +
-                    "cEoEHn1paQ6if7ZyJg4c6EPpAh96SKfBLtQyb1Yk+dM+0jtXKeLPfOqfdVJ5fyckkN04f2oQtJcZE5R" +
-                    "VaVDeszXltcxNLyK1EpYCgXi5fmS+bpqPUziQtHyWQSf4uwqKlI5Eo/x";
+            "AYClyiX/////AAABmZUUoZkGTkIoi+LAKCAqGAFdzuhe5c9JRs8t0FPGyKqqQ9L21NYhpMmVbdDpNvJQ+S/hw75tU61XfKig8CFsuF0M2IwvX1amtpdJoBVrEQsPdtz5aQTgv+8cyZr6kJT7qZNk8rpLMING/hN/q9BTPY98ugi9v7eNvM1BDt5mp9pZdbwjTxBhgpjKByqDTYMk8fMERc9/Jun3JH9YirEjApUFg/4TDFDOixu6qbMNR8K38BqXmtdwaH04DUVpSSt49LgPMU3rcVWurOojOQ0EQdVOTTCPs/tNyHQCGrXgeAXDg806z0nPibw3ne2wp95lELRegYHGIraNEg7zI2s75sBrIUI1gDm/j8ix3S/jXTzA";
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -179,21 +175,21 @@ public class AutonomousColorFinderOneCamera extends LinearOpMode {
         initVuforia();
         initTfod();
 
-        leftFrontDrive  = hardwareMap.get(DcMotorEx.class, "left_front");
-        leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back");
-        rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back");
-
-        rightBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        leftFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
-
-        leftFrontDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        leftBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-
-        leftFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
-        leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
-        rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+//        leftFrontDrive  = hardwareMap.get(DcMotorEx.class, "left_front");
+//        leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back");
+//        rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back");
+//
+//        rightBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
+//        leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
+//        leftFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
+//
+//        leftFrontDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+//        leftBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+//        rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+//
+//        leftFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+//        leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+//        rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
 
         // clipping/ focusing on only one part of screen
 

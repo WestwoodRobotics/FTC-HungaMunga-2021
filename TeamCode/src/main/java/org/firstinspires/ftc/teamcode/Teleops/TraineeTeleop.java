@@ -65,6 +65,11 @@ public class TraineeTeleop extends OpMode
     DcMotor frontLeft = null;
     DcMotor backRight = null;
     DcMotor backLeft = null;
+    Servo servo1 = null;
+    double servoPosition = 0.5;
+    double drive = 0.3;
+
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -74,11 +79,28 @@ public class TraineeTeleop extends OpMode
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        servo1 = hardwareMap.get(Servo.class, "servo1");
 
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
-        frontLeft.setDirection(DcMotor.Direction.FORWARD);
-        backRight.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.FORWARD);
+        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        frontRight.setMode(DcMotor.RunMode.RESET_ENCODERS);
+        frontLeft.setMode(DcMotor.RunMode.RESET_ENCODERS);
+        backRight.setMode(DcMotor.RunMode.RESET_ENCODERS);
+        backLeft.setMode(DcMotor.RunMode.RESET_ENCODERS);
+
+        frontRight.setDirection(DcMotor.Direction.FORWARD);
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.FORWARD);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
+        servo1.setDirection(Servo.Direction.FORWARD);
+
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
 
@@ -105,19 +127,59 @@ public class TraineeTeleop extends OpMode
      */
     @Override
     public void loop() {
-        double drive = 1;
-        double strafe = 0;
-        double turn = 0;
+        int currentPosBL = backLeft.getCurrentPosition();
+        int currentPosFL = frontLeft.getCurrentPosition();
+        int currentPosBR = backRight.getCurrentPosition();
+        int currentPosFR = frontRight.getCurrentPosition();
+        double drive = 0.3;
+        double strafe = gamepad1.left_stick_x;
+        double turn = gamepad1.right_stick_x;
+        boolean gamepadL = gamepad1.dpad_left;
+        boolean gamepadR = gamepad1.dpad_right;
 
         double frontRightPower = drive - strafe - turn;
         double frontLeftPower = drive + strafe + turn;
         double backRightPower = drive + strafe - turn;
         double backLeftPower = drive - strafe + turn;
 
+        if ( gamepadL == true) {
+           servoPosition += 0.01;
+        } else if (gamepadR == true) {
+            servoPosition -= 0.01;
+        }
+        servo1.setPosition(servoPosition);
+
+        frontRight.setTargetPosition(560);
+        frontLeft.setTargetPosition(560);
+        backRight.setTargetPosition(560);
+        backLeft.setTargetPosition(560);
+
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        if (currentPosBL >= 560) {
+            backLeftPower = 0;
+        }
+
+        if (currentPosFL >= 560) {
+            frontLeftPower = 0;
+        }
+
+        if (currentPosBR >= 560) {
+            backRightPower = 0;
+        }
+
+        if (currentPosFR >= 560) {
+            frontRightPower = 0;
+        }
+
         frontRight.setPower(frontRightPower);
         frontLeft.setPower(frontLeftPower);
         backRight.setPower(backRightPower);
         backLeft.setPower(backLeftPower);
+
 
         telemetry.addData("Status", "Running");
         telemetry.update();

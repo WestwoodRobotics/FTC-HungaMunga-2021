@@ -22,7 +22,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "CustomFinder", group = "Linear Opmode")
+@Autonomous(name = "customFinder", group = "Linear Opmode")
 public class CustomFinderOneCamera extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private double globalMovementTimer = 0;
@@ -47,12 +47,10 @@ public class CustomFinderOneCamera extends LinearOpMode {
      *  FreightFrenzy_BC.tflite  0: Ball,  1: Cube
      *  FreightFrenzy_DM.tflite  0: Duck,  1: Marker
      */
-    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
+    private static final String TFOD_MODEL_ASSET = "androidCalcTape.tflite";
     private static final String[] LABELS = {
-            "Ball",
-            "Cube",
-            "Duck",
-            "Marker"
+            "calculator",
+            "tape"
     };
 
     /*
@@ -69,11 +67,7 @@ public class CustomFinderOneCamera extends LinearOpMode {
      */
     // put your own key my key might be all used up by now
     private static final String VUFORIA_KEY =
-            "Afl+RML/////AAABmaMhjqdoa0n5o+LOBUlDi2FnRR3PvjXoX9GXBYOqhEzqDK5EKlhfk7DF9xzcZYPAYSpcyiB" +
-                    "sR9g89nQniC//pOf07VI7X8ajr5AWIGShrW3kPrD1uIlLG7IXWGA6AdL2onK51Nebvu7Qqim+BPqJRa" +
-                    "gq70nEvg5DrPujktWjnuu8TA3Mm7V9Ir/XYNqhyrAxxfm/yVwUUvP6l3Km+T9qvu8ezX628BmdMXhM4" +
-                    "cEoEHn1paQ6if7ZyJg4c6EPpAh96SKfBLtQyb1Yk+dM+0jtXKeLPfOqfdVJ5fyckkN04f2oQtJcZE5R" +
-                    "VaVDeszXltcxNLyK1EpYCgXi5fmS+bpqPUziQtHyWQSf4uwqKlI5Eo/x";
+            "AYClyiX/////AAABmZUUoZkGTkIoi+LAKCAqGAFdzuhe5c9JRs8t0FPGyKqqQ9L21NYhpMmVbdDpNvJQ+S/hw75tU61XfKig8CFsuF0M2IwvX1amtpdJoBVrEQsPdtz5aQTgv+8cyZr6kJT7qZNk8rpLMING/hN/q9BTPY98ugi9v7eNvM1BDt5mp9pZdbwjTxBhgpjKByqDTYMk8fMERc9/Jun3JH9YirEjApUFg/4TDFDOixu6qbMNR8K38BqXmtdwaH04DUVpSSt49LgPMU3rcVWurOojOQ0EQdVOTTCPs/tNyHQCGrXgeAXDg806z0nPibw3ne2wp95lELRegYHGIraNEg7zI2s75sBrIUI1gDm/j8ix3S/jXTzA";
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -136,21 +130,21 @@ public class CustomFinderOneCamera extends LinearOpMode {
         initVuforia();
         initTfod();
 
-        leftFrontDrive  = hardwareMap.get(DcMotorEx.class, "left_front");
-        leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back");
-        rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back");
+//        leftFrontDrive  = hardwareMap.get(DcMotorEx.class, "left_front");
+//        leftBackDrive  = hardwareMap.get(DcMotorEx.class, "left_back");
+//        rightBackDrive = hardwareMap.get(DcMotorEx.class, "right_back");
+//
+//        rightBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
+//        leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
+//        leftFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
+//
+//        leftFrontDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+//        leftBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+//        rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        rightBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        leftBackDrive.setDirection(DcMotorEx.Direction.FORWARD);
-        leftFrontDrive.setDirection(DcMotorEx.Direction.FORWARD);
-
-        leftFrontDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        leftBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        rightBackDrive.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-
-        leftFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
-        leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
-        rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+//        leftFrontDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+//        leftBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
+//        rightBackDrive.setVelocityPIDFCoefficients(15, 0, 0, 0);
 
         // clipping/ focusing on only one part of screen
 //        tfod.setClippingMargins(clipLeft, clipTop, clipRight, clipBottom);
@@ -208,45 +202,45 @@ public class CustomFinderOneCamera extends LinearOpMode {
         }
         telemetry.update();
         sleep(3000);
-
-        if (updatedRecognitions != null && duckIndex != 0) {
-           /* a variable storing the duck right position
-           with this we can just check fro left to right on the camera to know
-           on which section of the camera the ducky is in
-            */
-            float duckRight = updatedRecognitions.get(duckIndex-1).getRight();
-
-
-           /* example of what code does next
-           || = line1
-           | = line2
-            nothing1  ||  nothing2  | duck
-            the code has the right pos of the duck
-            meaning we first check if the right position is less than || position
-            then we check if the right position is less than | position
-            and lastly if it wasn't less than any of does two and it's position is
-            in the last part
-            */
-            if (duckRight < line1) {
-                leftBackDrive.setVelocity(3500);
-                telemetry.addData("duckRight", duckRight);
-                telemetry.update();
-                // sleep does in milliseconds - 1 second = 1000 seconds
-                sleep(3000);
-            }
-            else if (duckRight < line2) {
-                leftFrontDrive.setVelocity(3500);
-                telemetry.addData("duckRight", duckRight);
-                telemetry.update();
-                sleep(3000);
-            }
-            else {
-                rightBackDrive.setVelocity(3500);
-                telemetry.addData("duckRight", duckRight);
-                telemetry.update();
-                sleep(3000);
-            }
-        }
+//
+//        if (updatedRecognitions != null && duckIndex != 0) {
+//           /* a variable storing the duck right position
+//           with this we can just check fro left to right on the camera to know
+//           on which section of the camera the ducky is in
+//            */
+//            float duckRight = updatedRecognitions.get(duckIndex-1).getRight();
+//
+//
+//           /* example of what code does next
+//           || = line1
+//           | = line2
+//            nothing1  ||  nothing2  | duck
+//            the code has the right pos of the duck
+//            meaning we first check if the right position is less than || position
+//            then we check if the right position is less than | position
+//            and lastly if it wasn't less than any of does two and it's position is
+//            in the last part
+//            */
+//            if (duckRight < line1) {
+//                leftBackDrive.setVelocity(3500);
+//                telemetry.addData("duckRight", duckRight);
+//                telemetry.update();
+//                // sleep does in milliseconds - 1 second = 1000 seconds
+//                sleep(3000);
+//            }
+//            else if (duckRight < line2) {
+//                leftFrontDrive.setVelocity(3500);
+//                telemetry.addData("duckRight", duckRight);
+//                telemetry.update();
+//                sleep(3000);
+//            }
+//            else {
+//                rightBackDrive.setVelocity(3500);
+//                telemetry.addData("duckRight", duckRight);
+//                telemetry.update();
+//                sleep(3000);
+//            }
+//        }
 
     }
 
